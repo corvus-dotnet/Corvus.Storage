@@ -351,3 +351,5 @@ MigrationBackup/
 
 .vscode
 /Solutions/**/local.settings.json
+
+.docs/
