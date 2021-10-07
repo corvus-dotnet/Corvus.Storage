@@ -2,13 +2,13 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Concurrent;
+
+using Microsoft.Extensions.Configuration;
+
 namespace Corvus.Storage
 {
-    using System;
-    using System.Collections.Concurrent;
-
-    using Microsoft.Extensions.Configuration;
-
     /// <summary>
     /// An <see cref="ISingularScopeSource"/> that reads configuration values from an
     /// <see cref="IConfiguration"/>.

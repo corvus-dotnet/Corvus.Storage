@@ -2,13 +2,13 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using Corvus.Storage;
+using Corvus.Storage.Azure.BlobStorage;
+
+using Microsoft.Extensions.Configuration;
+
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Corvus.Storage;
-    using Corvus.Storage.Azure.BlobStorage;
-
-    using Microsoft.Extensions.Configuration;
-
     /// <summary>
     /// Common configuration code for services with stores implemented on top of tenanted
     /// storage.
@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddAzureBlobStorageClient(
             this IServiceCollection services)
         {
-            return services.AddSingleton<IBlobContainerClientFactory, BlobContainerClientFactory>();
+            return services.AddSingleton<IBlobContainerSourceByConfiguration, BlobContainerClientFactory>();
         }
     }
 }

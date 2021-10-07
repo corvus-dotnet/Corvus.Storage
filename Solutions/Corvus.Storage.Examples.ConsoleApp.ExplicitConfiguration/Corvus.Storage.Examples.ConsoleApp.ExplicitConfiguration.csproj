@@ -8,8 +8,11 @@
 
     <IsPackable>false</IsPackable>
 
-    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <UserSecretsId>b5862995-c63f-43c3-9603-7698d8a62af7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,11 +20,20 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21308.1" />
+    <PackageReference Include="System.CommandLine.Hosting" Version="0.3.0-alpha.21216.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Corvus.Storage.Azure.BlobStorage\Corvus.Storage.Azure.BlobStorage.csproj" />
+    <ProjectReference Include="..\Corvus.Storage.Examples.Azure.BlobStorage\Corvus.Storage.Examples.Azure.BlobStorage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

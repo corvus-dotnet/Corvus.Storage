@@ -4,10 +4,6 @@
 
 namespace Corvus.Storage.Azure.BlobStorage
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-
     /// <summary>
     /// Configuration settings for <see cref="IBlobContainerClientFactory"/>.
     /// </summary>

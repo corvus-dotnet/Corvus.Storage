@@ -2,19 +2,19 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+using NUnit.Framework;
+
+using TechTalk.SpecFlow;
+
 namespace Corvus.Storage.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-
-    using NUnit.Framework;
-
-    using TechTalk.SpecFlow;
-
     [Binding]
     public class ApplicationConfigurationScopeSourceSteps : IDisposable
     {

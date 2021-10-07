@@ -2,10 +2,10 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace Corvus.Storage
 {
-    using System;
-
     /// <summary>
     /// A source of <see cref="IStorageContextScope{TConfiguration}"/> for scenarios in which
     /// multiple scopes are not in use.

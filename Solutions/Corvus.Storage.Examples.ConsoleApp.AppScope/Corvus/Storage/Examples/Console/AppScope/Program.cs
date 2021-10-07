@@ -2,14 +2,14 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-namespace Corvus.Storage.Examples.Console.AppScope
+using System;
+using System.Threading.Tasks;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace Corvus.Storage.Examples.ConsoleApp.AppScope
 {
-    using System;
-    using System.Threading.Tasks;
-
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-
     /// <summary>
     /// Entry point for console application demonstrating use of application-wide scope.
     /// </summary>

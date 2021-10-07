@@ -27,5 +27,14 @@
         disable this rule just inside switch expressions, so we reluctantly live without it.
     -->
     <Rule Id="SA1025" Action="None" />
+    <!--
+        This style has become untenable since the Azure SDK started using namespaces starting
+        with "Azure". While the StyleCop documentation for SA1200 goes to some lengths to explain
+        the ambiguities that can arise if you put using directives outside of namespace declarations,
+        it fails to address the ambiguities that can arise if you put them inside, and in practice,
+        we are now running into the latter a lot, and so we're moving away from StyleCop's
+        standard recommendation.
+    -->
+    <Rule Id="SA1200" Action="None" />
   </Rules>
 </RuleSet>

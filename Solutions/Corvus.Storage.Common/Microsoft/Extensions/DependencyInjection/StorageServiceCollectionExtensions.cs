@@ -2,16 +2,12 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using Corvus.Storage;
+
+using Microsoft.Extensions.Configuration;
+
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-
-    using Corvus.Storage;
-
-    using Microsoft.Extensions.Configuration;
-
     /// <summary>
     /// Common configuration code for services with stores implemented on top of tenanted
     /// storage.

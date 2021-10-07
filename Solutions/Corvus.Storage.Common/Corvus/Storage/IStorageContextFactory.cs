@@ -2,10 +2,10 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using System.Threading.Tasks;
+
 namespace Corvus.Storage
 {
-    using System.Threading.Tasks;
-
     /// <summary>
     /// A source of storage contexts.
     /// </summary>
@@ -36,4 +36,21 @@ namespace Corvus.Storage
             IStorageContextScope<TConfiguration> scope,
             string contextName);
     }
+
+    ////public interface ICanMagicUpConfigsFromLogicalNames<TConfig>
+    ////{
+    ////    ValueTask<TConfig> GetConfig(string contextName);
+    ////}
+
+    ////public interface IStorageContextFactoryProvider<TStorageContext, TConfiguration>
+    ////{
+    ////    ValueTask<TStorageContext> GetContextAsync(TConfiguration config);
+    ////    string CreateCacheKeyForContext(TConfiguration config, string storageContextName);
+    ////}
+
+    ////public interface IScopedStorageConfigSource<TConfiguration>
+    ////{
+    ////    ValueTask<ICanMagicUpConfigsFromLogicalNames<TConfiguration>>
+    ////        GetConfigurationForScope(IStorageContextScope<TConfiguration> scope);
+    ////}
 }

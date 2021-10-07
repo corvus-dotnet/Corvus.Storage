@@ -2,21 +2,20 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-namespace Corvus.Storage.Examples.Console.AppScope
+using System;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+using Corvus.Storage.Azure.BlobStorage;
+
+using global::Azure;
+using global::Azure.Storage.Blobs;
+using global::Azure.Storage.Blobs.Models;
+using global::Azure.Storage.Blobs.Specialized;
+
+namespace Corvus.Storage.Examples.ConsoleApp.AppScope
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Text.Json;
-    using System.Threading.Tasks;
-
-    using Corvus.Storage.Azure.BlobStorage;
-    using global::Azure;
-    using global::Azure.Storage.Blobs;
-    using global::Azure.Storage.Blobs.Models;
-    using global::Azure.Storage.Blobs.Specialized;
-
     internal class UsingBlobStorage : IEntryPoint
     {
         private readonly IBlobContainerClientFactory blobContainerClientFactory;

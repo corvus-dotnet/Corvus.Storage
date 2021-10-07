@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    },
+    "ConnectionStringPlainText": {
+      "commandName": "Project",
+      "commandLineArgs": "blob connection-string-plain-text"
+    },
+    "ConnectionStringKeyVault": {
+      "commandName": "Project",
+      "commandLineArgs": "blob connection-string-key-vault"
+    }
+  }
+}

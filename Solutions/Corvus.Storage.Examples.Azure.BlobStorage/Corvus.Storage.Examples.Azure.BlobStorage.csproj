@@ -4,12 +4,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
 
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.10.0" />
     <PackageReference Include="Endjin.RecommendedPractices" Version="1.3.0-PullRequest0026.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Corvus.Storage.Common\Corvus.Storage.Common.csproj" />
+    <ProjectReference Include="..\Corvus.Storage.Azure.BlobStorage\Corvus.Storage.Azure.BlobStorage.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,14 +2,10 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace Corvus.Storage.Azure.BlobStorage
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-
-    using Microsoft.Extensions.Configuration;
-
     /// <summary>
     /// Storage scope for BlobContainerClient contexts for scenarios where only a single (e.g.
     /// application-wide) scope is required.
