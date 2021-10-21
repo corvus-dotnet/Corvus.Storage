@@ -30,6 +30,9 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
                 services.AddSingleton(configuration);
                 services.AddAzureBlobStorageClient();
 
+                services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
+                services.AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration(configuration.ServiceIdentity);
+
                 services.AddSingleton<UsingBlobStorageWithExplicitConfig>();
             });
     }

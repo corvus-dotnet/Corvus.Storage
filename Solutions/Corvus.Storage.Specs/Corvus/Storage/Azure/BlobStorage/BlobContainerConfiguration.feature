@@ -24,9 +24,14 @@
 #  
 
 Scenario: Connection string in configuration
-    Given configuration of """"SomeStorageConfig": {
-  "ConnectionStringPlainText": "DefaultEndpointsProtocol=https;AccountName=mystorageaccount;AccountKey=mykey"
-}"""
+    Given configuration of
+        """
+        {
+          "SomeStorageConfig": {
+            "ConnectionStringPlainText": "DefaultEndpointsProtocol=https;AccountName=mystorageaccount;AccountKey=mykey"
+          }
+        }
+        """
 
 
 # Make support for legacy config a configurable thing, because it looks like entirely missing config ends

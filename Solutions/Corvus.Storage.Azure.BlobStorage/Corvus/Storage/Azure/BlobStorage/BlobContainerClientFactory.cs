@@ -9,6 +9,7 @@ using Azure.Core;
 using Azure.Identity;
 
 using Corvus.Identity;
+using Corvus.Identity.ClientAuthentication.Azure;
 
 using global::Azure.Storage.Blobs;
 
@@ -22,15 +23,30 @@ namespace Corvus.Storage.Azure.BlobStorage
         IBlobContainerSourceByConfiguration
     {
         private const string DevelopmentStorageConnectionString = "UseDevelopmentStorage=true";
-        private readonly BlobContainerClientFactoryOptions? options;
+        private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource;
+        private readonly IServiceIdentityAzureTokenCredentialSource serviceIdAzureTokenCredentialSource;
+
+        ////private readonly BlobContainerClientFactoryOptions? options;
 
         /// <summary>
         /// Creates a <see cref="BlobContainerClientFactory"/>.
         /// </summary>
-        /// <param name="options">Configuration for the TenantBlobContainerClientFactory.</param>
-        public BlobContainerClientFactory(BlobContainerClientFactoryOptions? options = null)
+        /// <param name="azureTokenCredentialSource">
+        /// Provides <see cref="TokenCredential"/>s in exchange for
+        /// <see cref="ClientIdentityConfiguration"/>s.
+        /// </param>
+        /// <param name="serviceIdAzureTokenCredentialSource">
+        /// Provides <see cref="TokenCredential"/>s representing the service identity.
+        /// </param>
+        /////// <param name="options">Configuration for the TenantBlobContainerClientFactory.</param>
+        public BlobContainerClientFactory(
+            IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource,
+            IServiceIdentityAzureTokenCredentialSource serviceIdAzureTokenCredentialSource)
+            ////BlobContainerClientFactoryOptions? options = null)
         {
-            this.options = options;
+            ////this.options = options;
+            this.azureTokenCredentialSource = azureTokenCredentialSource;
+            this.serviceIdAzureTokenCredentialSource = serviceIdAzureTokenCredentialSource;
         }
 
         /// <inheritdoc/>
@@ -67,15 +83,15 @@ namespace Corvus.Storage.Azure.BlobStorage
 
             if (configuration.ConnectionStringInKeyVault is not null)
             {
-                ClientIdentitySourceTypes keyVaultClientIdentitySourceType =
-                    configuration.ConnectionStringInKeyVault.VaultClientIdentity?.IdentitySourceType
-                    ?? ClientIdentitySourceTypes.Managed;
-                TokenCredential? keyVaultCredentials = keyVaultClientIdentitySourceType switch
-                {
-                    ClientIdentitySourceTypes.Managed => new ManagedIdentityCredential(),
-                    ClientIdentitySourceTypes.AzureIdentityDefaultAzureCredential => new DefaultAzureCredential(),
-                    _ => null,
-                };
+                // If no identity for the key vault is specified we use the ambient service
+                // identity. Otherwise, we use the identity configuration supplied.
+                IAzureTokenCredentialSource credentialSource = configuration.ConnectionStringInKeyVault.VaultClientIdentity is null
+                    ? this.serviceIdAzureTokenCredentialSource
+                    : await this.azureTokenCredentialSource
+                        .CredentialSourceForConfigurationAsync(configuration.ConnectionStringInKeyVault.VaultClientIdentity)
+                        .ConfigureAwait(false);
+                TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync()
+                    .ConfigureAwait(false);
                 if (keyVaultCredentials is not null)
                 {
                     string connectionString = await this.GetKeyVaultSecretAsync(

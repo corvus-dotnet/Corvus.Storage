@@ -2,7 +2,7 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-using Corvus.Identity;
+using Corvus.Identity.ClientAuthentication.Azure;
 
 namespace Corvus.Storage.Azure.BlobStorage
 {
@@ -20,7 +20,14 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// Creates a <see cref="BlobContainerConfiguration"/>.
         /// </summary>
         /// <remarks>
-        /// Typically used by Microsoft.Extensions.Configuration.
+        /// <para>
+        /// We define a cloning constructor to make it easy to create new versions of
+        /// configurations that have specific properties changed but which are identical in other
+        /// respects, but this has the side effect of disabling C#'s default constructor
+        /// generation. Nice though it would be to be able to declare one more constructor that
+        /// requires all non-optional properties, Microsoft.Extensions.Configuration can't cope
+        /// with that, so we have to supply a no-args constructor.
+        /// </para>
         /// </remarks>
         public BlobContainerConfiguration()
         {

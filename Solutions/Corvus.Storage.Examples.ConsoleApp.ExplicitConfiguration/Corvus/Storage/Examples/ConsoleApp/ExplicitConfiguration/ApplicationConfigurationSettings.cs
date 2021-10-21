@@ -5,6 +5,8 @@
 // Microsoft.Extensions.Configuration does not get on well with nullable refs
 #nullable disable annotations
 
+using Corvus.Identity.ClientAuthentication.Azure;
+
 namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
 {
     /// <summary>
@@ -16,5 +18,11 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
         /// Gets or sets the configuration settings for blob storage.
         /// </summary>
         public BlobStorageConfigurationSettings BlobStorage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration determining the Azure AD identity to use as the ambient
+        /// service identity.
+        /// </summary>
+        public ClientIdentityConfiguration ServiceIdentity { get; set; }
     }
 }
