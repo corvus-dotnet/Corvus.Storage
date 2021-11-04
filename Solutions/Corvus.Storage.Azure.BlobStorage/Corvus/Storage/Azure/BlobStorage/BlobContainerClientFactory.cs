@@ -21,7 +21,7 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// A factory for a <see cref="BlobContainerClient"/>.
     /// </summary>
     internal class BlobContainerClientFactory :
-        CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration>,
+        CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>,
         IBlobContainerSourceByConfiguration
     {
         private const string DevelopmentStorageConnectionString = "UseDevelopmentStorage=true";
@@ -56,9 +56,10 @@ namespace Corvus.Storage.Azure.BlobStorage
 
         /// <inheritdoc/>
         protected override async ValueTask<BlobContainerClient> CreateContextAsync(
-            BlobContainerConfiguration configuration)
+            BlobContainerConfiguration configuration,
+            BlobClientOptions? blobClientOptions)
         {
-            BlobServiceClient blobClient = await this.CreateBlockBlobClientAsync(configuration)
+            BlobServiceClient blobClient = await this.CreateBlockBlobClientAsync(configuration, blobClientOptions)
                 .ConfigureAwait(false);
 
             return blobClient.GetBlobContainerClient(configuration.Container);
@@ -73,7 +74,9 @@ namespace Corvus.Storage.Azure.BlobStorage
             return System.Text.Json.JsonSerializer.Serialize(contextConfiguration);
         }
 
-        private async Task<BlobServiceClient> CreateBlockBlobClientAsync(BlobContainerConfiguration configuration)
+        private async Task<BlobServiceClient> CreateBlockBlobClientAsync(
+            BlobContainerConfiguration configuration,
+            BlobClientOptions? blobClientOptions)
         {
             if (configuration is null)
             {
@@ -83,7 +86,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             // TODO: Handle all the options properly. Check for valid combination.
             if (!string.IsNullOrWhiteSpace(configuration.ConnectionStringPlainText))
             {
-                return new BlobServiceClient(configuration.ConnectionStringPlainText);
+                return new BlobServiceClient(configuration.ConnectionStringPlainText, blobClientOptions);
             }
 
             if (configuration.ConnectionStringInKeyVault is not null)
@@ -105,7 +108,7 @@ namespace Corvus.Storage.Azure.BlobStorage
                         configuration.ConnectionStringInKeyVault.SecretName)
                         .ConfigureAwait(false);
 
-                    return new BlobServiceClient(connectionString);
+                    return new BlobServiceClient(connectionString, blobClientOptions);
                 }
             }
 

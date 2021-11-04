@@ -25,8 +25,12 @@ namespace Corvus.Storage
     /// The type containing the information identifying a particular physical, tenant-specific
     /// instance of a context.
     /// </typeparam>
-    public abstract class CachingStorageContextFactory<TStorageContext, TConfiguration> :
-        IStorageContextSourceByConfiguration<TStorageContext, TConfiguration>
+    /// <typeparam name="TConnectionOptions">
+    /// The type containing information describing the particular connection requirements (e.g.,
+    /// retry settings, pipeline configuration).
+    /// </typeparam>
+    public abstract class CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions> :
+        IStorageContextSourceByConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
     {
         private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
         private readonly Random random = new ();
@@ -68,7 +72,7 @@ namespace Corvus.Storage
         ////}
 
         /// <inheritdoc/>
-        public async ValueTask<TStorageContext> GetStorageContextAsync(TConfiguration contextConfiguration)
+        public async ValueTask<TStorageContext> GetStorageContextAsync(TConfiguration contextConfiguration, TConnectionOptions? connectionOptions)
         {
             if (contextConfiguration is null)
             {
@@ -81,7 +85,7 @@ namespace Corvus.Storage
             // concurrent use?
             Task<TStorageContext> result = this.contexts.GetOrAdd(
                 key,
-                async _ => await this.CreateContextAsync(contextConfiguration).ConfigureAwait(false));
+                async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions).ConfigureAwait(false));
 
             if (result.IsFaulted)
             {
@@ -98,7 +102,7 @@ namespace Corvus.Storage
 
                 result = this.contexts.GetOrAdd(
                     key,
-                    async _ => await this.CreateContextAsync(contextConfiguration).ConfigureAwait(false));
+                    async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions).ConfigureAwait(false));
             }
 
             return await result.ConfigureAwait(false);
@@ -159,9 +163,11 @@ namespace Corvus.Storage
         /// Create the context.
         /// </summary>
         /// <param name="configuration">The container configuration.</param>
+        /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
         protected abstract ValueTask<TStorageContext> CreateContextAsync(
-            TConfiguration configuration);
+            TConfiguration configuration,
+            TConnectionOptions? connectionOptions);
 
         /// <summary>
         /// Produces a unique cache key based on the particular storage context that the

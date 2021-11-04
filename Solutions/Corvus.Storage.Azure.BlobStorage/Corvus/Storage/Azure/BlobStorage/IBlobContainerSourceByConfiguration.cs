@@ -12,7 +12,7 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// <see cref="BlobContainerClient"/> objects these represent.
     /// </summary>
     public interface IBlobContainerSourceByConfiguration :
-        IStorageContextSourceByConfiguration<BlobContainerClient, BlobContainerConfiguration>
+        IStorageContextSourceByConfiguration<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>
     {
     }
 }
