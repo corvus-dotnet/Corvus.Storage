@@ -41,7 +41,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddAzureBlobStorageClient(
             this IServiceCollection services)
         {
-            return services.AddSingleton<IBlobContainerSourceByConfiguration, BlobContainerClientFactory>();
+            return services
+                .AddAzureTokenCredentialSourceFromDynamicConfiguration()
+                .AddSingleton<IBlobContainerSourceByConfiguration, BlobContainerClientFactory>();
         }
     }
 }
