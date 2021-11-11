@@ -6,9 +6,8 @@ using System;
 using System.Threading.Tasks;
 
 using Azure.Core;
-using Azure.Identity;
+using Azure.Storage;
 
-using Corvus.Identity;
 using Corvus.Identity.ClientAuthentication.Azure;
 
 using global::Azure.Storage.Blobs;
@@ -91,24 +90,20 @@ namespace Corvus.Storage.Azure.BlobStorage
 
             if (configuration.ConnectionStringInKeyVault is not null)
             {
-                // If no identity for the key vault is specified we use the ambient service
-                // identity. Otherwise, we use the identity configuration supplied.
-                IAzureTokenCredentialSource credentialSource = configuration.ConnectionStringInKeyVault.VaultClientIdentity is null
-                    ? this.serviceProvider.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>()
-                    : await this.azureTokenCredentialSource
-                        .CredentialSourceForConfigurationAsync(configuration.ConnectionStringInKeyVault.VaultClientIdentity)
-                        .ConfigureAwait(false);
-                TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync()
-                    .ConfigureAwait(false);
-                if (keyVaultCredentials is not null)
+                string? connectionString = await this.GetKeyVaultSecretFromConfigAsync(configuration.ConnectionStringInKeyVault).ConfigureAwait(false);
+                if (connectionString is not null)
                 {
-                    string connectionString = await this.GetKeyVaultSecretAsync(
-                        keyVaultCredentials,
-                        configuration.ConnectionStringInKeyVault.VaultName,
-                        configuration.ConnectionStringInKeyVault.SecretName)
-                        .ConfigureAwait(false);
-
                     return new BlobServiceClient(connectionString, blobClientOptions);
+                }
+            }
+            else if (configuration.AccessKeyInKeyVault is not null && configuration.AccountName is not null)
+            {
+                string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(configuration.AccessKeyInKeyVault).ConfigureAwait(false);
+                if (accessKey is not null)
+                {
+                    return new BlobServiceClient(
+                        new Uri($"https://{configuration.AccountName}.blob.core.windows.net"),
+                        new StorageSharedKeyCredential(configuration.AccountName, accessKey));
                 }
             }
 
@@ -139,6 +134,31 @@ namespace Corvus.Storage.Azure.BlobStorage
             ////        new Uri($"https://{configuration.AccountName}.blob.core.windows.net"),
             ////        credentials);
             ////}
+        }
+
+        private async Task<string?> GetKeyVaultSecretFromConfigAsync(KeyVaultSecretConfiguration secretConfiguration)
+        {
+            // If no identity for the key vault is specified we use the ambient service
+            // identity. Otherwise, we use the identity configuration supplied.
+            IAzureTokenCredentialSource credentialSource = secretConfiguration.VaultClientIdentity is null
+                ? this.serviceProvider.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>()
+                : await this.azureTokenCredentialSource
+                    .CredentialSourceForConfigurationAsync(secretConfiguration.VaultClientIdentity)
+                    .ConfigureAwait(false);
+            TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync()
+                .ConfigureAwait(false);
+            if (keyVaultCredentials is not null)
+            {
+                string secret = await this.GetKeyVaultSecretAsync(
+                    keyVaultCredentials,
+                    secretConfiguration.VaultName,
+                    secretConfiguration.SecretName)
+                    .ConfigureAwait(false);
+
+                return secret;
+            }
+
+            return null;
         }
     }
 }

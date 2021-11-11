@@ -11,6 +11,10 @@
     "ConnectionStringKeyVault": {
       "commandName": "Project",
       "commandLineArgs": "blob connection-string-key-vault"
+    },
+    "AccessKeyKeyVault": {
+      "commandName": "Project",
+      "commandLineArgs": "blob access-key-key-vault"
     }
   }
 }

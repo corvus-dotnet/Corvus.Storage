@@ -63,8 +63,6 @@ namespace Corvus.Storage.Azure.BlobStorage
             this.ConnectionStringInKeyVault = source.ConnectionStringInKeyVault;
             this.StorageClientIdentity = source.StorageClientIdentity;
             this.Container = source.Container;
-            this.KeyVaultName = source.KeyVaultName;
-            this.AccountKeySecretName = source.AccountKeySecretName;
         }
 
         /// <summary>
@@ -76,14 +74,6 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// Note that if you are using Azure AD authentication, you must specify an account name,
         /// because the Azure SDK does not support the use of connection strings in conjunction
         /// with Azure AD authentication.
-        /// </para>
-        /// <para>
-        /// To support applications that have migrated from old <c>Corvus.Tenancy</c> libraries,
-        /// this supports the following convention: If the <see cref="AccountKeySecretName"/> is
-        /// empty or null, then this can contain a complete connection string. However, the use of
-        /// this convention is discouraged, partly because it is obscure and confusing, and partly
-        /// because raw connection strings are often sensitive because they can contain credentials
-        /// making it bad practice to put them in configuration data.
         /// </para>
         /// </remarks>
         public string? AccountName { get; set; }
@@ -161,16 +151,6 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// We may need to introduce something similar.
         /// </remarks>
         public string? Container { get; set; }
-
-        /// <summary>
-        /// Gets or sets the key value name.
-        /// </summary>
-        public string? KeyVaultName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the account key secret name when using legacy configuration.
-        /// </summary>
-        public string? AccountKeySecretName { get; set; }
 
         /// <summary>
         /// Builds a new configuration that has a different <see cref="Container"/>, but which is

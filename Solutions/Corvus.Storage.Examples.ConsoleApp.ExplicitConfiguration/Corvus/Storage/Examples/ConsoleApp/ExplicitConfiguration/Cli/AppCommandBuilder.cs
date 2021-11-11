@@ -20,6 +20,7 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
             {
                 new Command("blob", "Azure Blob Storage commands")
                 {
+                    new AccessKeyInKeyVaultCommand(),
                     new ConnectionStringInPlainTextCommand(),
                     new ConnectionStringInKeyVaultCommand(),
                 },
@@ -36,6 +37,7 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
                     configureHost(builder);
                     builder.UseCommandHandler<ConnectionStringInPlainTextCommand, ConnectionStringInPlainTextCommand.Run>();
                     builder.UseCommandHandler<ConnectionStringInKeyVaultCommand, ConnectionStringInKeyVaultCommand.Run>();
+                    builder.UseCommandHandler<AccessKeyInKeyVaultCommand, AccessKeyInKeyVaultCommand.Run>();
                 })
                 .Build();
         }

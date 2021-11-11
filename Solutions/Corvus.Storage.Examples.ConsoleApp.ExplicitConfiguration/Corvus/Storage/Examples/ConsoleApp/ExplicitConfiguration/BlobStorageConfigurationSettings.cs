@@ -21,9 +21,14 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
         public BlobContainerConfiguration ConnectionStringInConfiguration { get; set; }
 
         /// <summary>
-        /// Gets or sets the blob storage configuration that puts describes a connection string in
-        /// key vault.
+        /// Gets or sets the blob storage configuration that puts a connection string in key vault.
         /// </summary>
         public BlobContainerConfiguration ConnectionStringInKeyVault { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blob storage configuration that puts an access key in key vault, and
+        /// the account name in configuration.
+        /// </summary>
+        public BlobContainerConfiguration AccessKeyInKeyVault { get; set; }
     }
 }
