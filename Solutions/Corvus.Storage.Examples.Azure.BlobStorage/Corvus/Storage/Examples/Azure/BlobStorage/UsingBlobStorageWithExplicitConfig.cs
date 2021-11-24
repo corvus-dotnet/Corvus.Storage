@@ -57,15 +57,15 @@ namespace Corvus.Storage.Examples.Azure.BlobStorage
             Response<BlobDownloadResult> data = await dataBlob.DownloadContentAsync().ConfigureAwait(false);
             return data.Value.Content.ToString();
 
-            //// And/or:
-            ////return await this.blobContainerFactory.WithContextAsync(
-            ////    containerConfig,
-            ////    async container =>
-            ////    {
-            ////        BlockBlobClient dataBlob = container.GetBlockBlobClient(id);
-            ////        Response<BlobDownloadResult> data = await dataBlob.DownloadContentAsync().ConfigureAwait(false);
-            ////        return data.Value.Content.ToString();
-            ////    });
+            // TODO: do we also want to consider something like this?
+            // return await this.blobContainerFactory.WithContextAsync(
+            //     containerConfig,
+            //     async container =>
+            //     {
+            //         BlockBlobClient dataBlob = container.GetBlockBlobClient(id);
+            //         Response<BlobDownloadResult> data = await dataBlob.DownloadContentAsync().ConfigureAwait(false);
+            //         return data.Value.Content.ToString();
+            //     });
         }
     }
 }

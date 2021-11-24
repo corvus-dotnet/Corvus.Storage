@@ -2,10 +2,10 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-using System;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
+using System.CommandLine.IO;
 using System.Threading.Tasks;
 
 using Corvus.Storage.Azure.BlobStorage;
@@ -92,8 +92,8 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
                     blobId)
                     .ConfigureAwait(false);
 
-                Console.WriteLine($"Fetched blob {blobId} from {containerName}:");
-                Console.WriteLine(data);
+                context.Console.Out.WriteLine($"Fetched blob {blobId} from {containerName}:");
+                context.Console.Out.WriteLine(data);
 
                 return 0;
             }
