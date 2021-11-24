@@ -9,11 +9,6 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// <summary>
     /// Encapsulates configuration for a storage account.
     /// </summary>
-    // TODO: in tenanted systems, this is read from the tenant properties, and we have a rule that says Container
-    // has to be set, and it's the app's responsibility to ensure that a container of that name exists.
-    // Conversely, the TenantProviderBlobStore (which implements ITenantProvider over blob storage,
-    // itself a layer over ITenantBlobContainerClientFactory) requires that Container not be set, because it
-    // generates its own container names.
     public class BlobContainerConfiguration
     {
         /// <summary>
