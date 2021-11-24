@@ -1,11 +1,62 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31515.178
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Common", "Corvus.Storage.Common\Corvus.Storage.Common.csproj", "{5C02ACDB-8E6B-4B9E-9F01-07C76E520046}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Azure.BlobStorage", "Corvus.Storage.Azure.BlobStorage\Corvus.Storage.Azure.BlobStorage.csproj", "{89953406-012B-44B7-8DB5-F3A2E3155A55}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{95491911-89D1-4E14-8EAC-E78BB17FF47E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Specs", "Corvus.Storage.Specs\Corvus.Storage.Specs.csproj", "{1FCCC6B4-9D17-44F9-A421-6AE8F7B5AB06}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Examples.Azure.BlobStorage", "Corvus.Storage.Examples.Azure.BlobStorage\Corvus.Storage.Examples.Azure.BlobStorage.csproj", "{D52EF382-D71B-419C-B1F7-0783B00A3955}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration", "Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration\Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.csproj", "{5FB84ED0-F8B1-458A-9A00-D0358028748E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{53ACB91B-F14B-4E8B-AAC9-5A68E55181DB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		..\.gitignore = ..\.gitignore
+		..\GitVersion.yml = ..\GitVersion.yml
+		stylecop.json = stylecop.json
+		StyleCop.ruleset = StyleCop.ruleset
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C02ACDB-8E6B-4B9E-9F01-07C76E520046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C02ACDB-8E6B-4B9E-9F01-07C76E520046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C02ACDB-8E6B-4B9E-9F01-07C76E520046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C02ACDB-8E6B-4B9E-9F01-07C76E520046}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89953406-012B-44B7-8DB5-F3A2E3155A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89953406-012B-44B7-8DB5-F3A2E3155A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89953406-012B-44B7-8DB5-F3A2E3155A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89953406-012B-44B7-8DB5-F3A2E3155A55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FCCC6B4-9D17-44F9-A421-6AE8F7B5AB06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FCCC6B4-9D17-44F9-A421-6AE8F7B5AB06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FCCC6B4-9D17-44F9-A421-6AE8F7B5AB06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FCCC6B4-9D17-44F9-A421-6AE8F7B5AB06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D52EF382-D71B-419C-B1F7-0783B00A3955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D52EF382-D71B-419C-B1F7-0783B00A3955}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D52EF382-D71B-419C-B1F7-0783B00A3955}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D52EF382-D71B-419C-B1F7-0783B00A3955}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FB84ED0-F8B1-458A-9A00-D0358028748E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FB84ED0-F8B1-458A-9A00-D0358028748E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FB84ED0-F8B1-458A-9A00-D0358028748E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FB84ED0-F8B1-458A-9A00-D0358028748E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D52EF382-D71B-419C-B1F7-0783B00A3955} = {95491911-89D1-4E14-8EAC-E78BB17FF47E}
+		{5FB84ED0-F8B1-458A-9A00-D0358028748E} = {95491911-89D1-4E14-8EAC-E78BB17FF47E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11FBB969-AF38-4D8A-9CD7-6B935150F47F}
