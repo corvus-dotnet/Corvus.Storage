@@ -34,42 +34,6 @@ namespace Corvus.Storage
     {
         private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
         private readonly Random random = new ();
-        ////private readonly IAzureTokenCredentialSource keyVaultTokenCredentialSource;
-
-        /////// <summary>
-        /////// Creates a <see cref="CachingStorageContextFactory{TStorageContext, TConfiguration}"/>.
-        /////// </summary>
-        /////// <param name="keyVaultTokenCredentialSource">
-        /////// The source from which to get <see cref="TokenCredential"/>s to authenticate when using
-        /////// Azure Key Vault.
-        /////// </param>
-        ////protected CachingStorageContextFactory(
-        ////    IAzureTokenCredentialSource keyVaultTokenCredentialSource)
-        ////{
-        ////    this.keyVaultTokenCredentialSource = keyVaultTokenCredentialSource ?? throw new ArgumentNullException(nameof(keyVaultTokenCredentialSource));
-        ////}
-
-        /////// <summary>
-        /////// Get a storage container within a particular scope.
-        /////// </summary>
-        /////// <param name="scope">The scope (e.g. tenant) for which to retrieve the context.</param>
-        /////// <param name="contextName">
-        /////// The name of the required context (e.g. an Azure Storage container name, or .
-        /////// </param>
-        /////// <returns>
-        /////// A task that produces the storage context instance for the specified scope and
-        /////// container.
-        /////// </returns>
-        /////// <remarks>
-        /////// This caches context instances to ensure that a singleton is used for all request for
-        /////// the same scope and container definition.
-        /////// </remarks>
-        ////public async ValueTask<TStorageContext> GetContextForScopeAsync(
-        ////    IStorageContextScope<TConfiguration> scope,
-        ////    string contextName)
-        ////{
-
-        ////}
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetStorageContextAsync(TConfiguration contextConfiguration, TConnectionOptions? connectionOptions)
@@ -129,7 +93,7 @@ namespace Corvus.Storage
             string secretName)
         {
             var keyVaultCredentials = LegacyAzureServiceTokenProviderConnectionString.ToTokenCredential(azureServicesAuthConnectionString ?? string.Empty);
-            return await this.GetKeyVaultSecretAsync(keyVaultCredentials, keyVaultName, secretName);
+            return await this.GetKeyVaultSecretAsync(keyVaultCredentials, keyVaultName, secretName).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -180,14 +144,5 @@ namespace Corvus.Storage
         /// A key that is unique to the storage context identified by this configuration.
         /// </returns>
         protected abstract string GetCacheKeyForContext(TConfiguration contextConfiguration);
-
-        ////private async Task<TStorageContext> CreateContainerAsync(
-        ////    IStorageContextScope<TConfiguration> scope,
-        ////    string contextName)
-        ////{
-        ////    TConfiguration configuration = scope.GetConfigurationForContext(contextName);
-
-        ////    return await this.CreateContextAsync(contextName, configuration).ConfigureAwait(false);
-        ////}
     }
 }

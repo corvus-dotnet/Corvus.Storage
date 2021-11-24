@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31515.178
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Common", "Corvus.Storage.Common\Corvus.Storage.Common.csproj", "{5C02ACDB-8E6B-4B9E-9F01-07C76E520046}"
 EndProject
@@ -16,6 +16,15 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Examples.Azure.BlobStorage", "Corvus.Storage.Examples.Azure.BlobStorage\Corvus.Storage.Examples.Azure.BlobStorage.csproj", "{D52EF382-D71B-419C-B1F7-0783B00A3955}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration", "Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration\Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.csproj", "{5FB84ED0-F8B1-458A-9A00-D0358028748E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{53ACB91B-F14B-4E8B-AAC9-5A68E55181DB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		..\.gitignore = ..\.gitignore
+		..\GitVersion.yml = ..\GitVersion.yml
+		stylecop.json = stylecop.json
+		StyleCop.ruleset = StyleCop.ruleset
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

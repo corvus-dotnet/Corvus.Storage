@@ -7,12 +7,12 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using Corvus.Storage.Azure.BlobStorage;
+using Azure;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 
-using global::Azure;
-using global::Azure.Storage.Blobs;
-using global::Azure.Storage.Blobs.Models;
-using global::Azure.Storage.Blobs.Specialized;
+using Corvus.Storage.Azure.BlobStorage;
 
 namespace Corvus.Storage.Examples.ConsoleApp.AppScope
 {

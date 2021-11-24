@@ -2,7 +2,7 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-using global::Azure.Storage.Blobs;
+using Azure.Storage.Blobs;
 
 namespace Corvus.Storage.Azure.BlobStorage
 {

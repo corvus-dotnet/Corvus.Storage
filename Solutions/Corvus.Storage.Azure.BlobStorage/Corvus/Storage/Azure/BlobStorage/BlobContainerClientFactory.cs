@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 using Azure.Core;
 using Azure.Storage;
+using Azure.Storage.Blobs;
 
 using Corvus.Identity.ClientAuthentication.Azure;
-
-using global::Azure.Storage.Blobs;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,11 +22,8 @@ namespace Corvus.Storage.Azure.BlobStorage
         CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>,
         IBlobContainerSourceByConfiguration
     {
-        private const string DevelopmentStorageConnectionString = "UseDevelopmentStorage=true";
         private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource;
         private readonly IServiceProvider serviceProvider;
-
-        ////private readonly BlobContainerClientFactoryOptions? options;
 
         /// <summary>
         /// Creates a <see cref="BlobContainerClientFactory"/>.
@@ -42,13 +38,10 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// on <see cref="IServiceIdentityAzureTokenCredentialSource"/>, but only in certain
         /// scenarios.)
         /// </param>
-        /////// <param name="options">Configuration for the TenantBlobContainerClientFactory.</param>
         public BlobContainerClientFactory(
             IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource,
             IServiceProvider serviceProvider)
-        ////BlobContainerClientFactoryOptions? options = null)
         {
-            ////this.options = options;
             this.azureTokenCredentialSource = azureTokenCredentialSource;
             this.serviceProvider = serviceProvider;
         }
@@ -103,37 +96,12 @@ namespace Corvus.Storage.Azure.BlobStorage
                 {
                     return new BlobServiceClient(
                         new Uri($"https://{configuration.AccountName}.blob.core.windows.net"),
-                        new StorageSharedKeyCredential(configuration.AccountName, accessKey));
+                        new StorageSharedKeyCredential(configuration.AccountName, accessKey),
+                        blobClientOptions);
                 }
             }
 
             throw new ArgumentException("Invalid configuration", nameof(configuration));
-
-            // This is the old behaviour. We will need to support this to enable use of legacy configuration,
-            // but may want to make that something switchable.
-            ////// Null forgiving operator only necessary for as long as we target .NET Standard 2.0.
-            ////if (string.IsNullOrEmpty(configuration.AccountName) || configuration.AccountName!.Equals(DevelopmentStorageConnectionString))
-            ////{
-            ////    return new BlobServiceClient(DevelopmentStorageConnectionString);
-            ////}
-            ////else if (string.IsNullOrWhiteSpace(configuration.AccountKeySecretName))
-            ////{
-            ////    // As the documentation for BlobStorageConfiguration.AccountName says:
-            ////    //  "If the account key secret name is empty, then this should contain
-            ////    //   a complete connection string."
-            ////    return new BlobServiceClient(configuration.AccountName);
-            ////}
-            ////else
-            ////{
-            ////    string accountKey = await this.GetKeyVaultSecretAsync(
-            ////        this.options?.AzureServicesAuthConnectionString,
-            ////        configuration.KeyVaultName!,
-            ////        configuration.AccountKeySecretName!).ConfigureAwait(false);
-            ////    var credentials = new StorageSharedKeyCredential(configuration.AccountName, accountKey);
-            ////    return new BlobServiceClient(
-            ////        new Uri($"https://{configuration.AccountName}.blob.core.windows.net"),
-            ////        credentials);
-            ////}
         }
 
         private async Task<string?> GetKeyVaultSecretFromConfigAsync(KeyVaultSecretConfiguration secretConfiguration)
