@@ -63,6 +63,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             // TODO: there are many options for configuration, and we need to work out a sound way
             // to reduce that reliably to a cache key.
             // This is a placeholder that kind of works but is bad for a lot of reasons
+            // https://github.com/corvus-dotnet/Corvus.Storage/issues/3
             return System.Text.Json.JsonSerializer.Serialize(contextConfiguration);
         }
 
