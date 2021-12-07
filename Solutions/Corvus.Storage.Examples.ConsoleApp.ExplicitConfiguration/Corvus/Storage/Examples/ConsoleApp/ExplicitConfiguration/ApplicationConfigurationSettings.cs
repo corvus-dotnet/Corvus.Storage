@@ -20,6 +20,11 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
         public BlobStorageConfigurationSettings BlobStorage { get; set; }
 
         /// <summary>
+        /// Gets or sets the configuration settings for Cosmos.
+        /// </summary>
+        public CosmosConfigurationSettings Cosmos { get; set; }
+
+        /// <summary>
         /// Gets or sets the configuration determining the Azure AD identity to use as the ambient
         /// service identity.
         /// </summary>

@@ -1,32 +1,28 @@
-﻿// <copyright file="BlobContainerClientFactory.cs" company="Endjin Limited">
+﻿// <copyright file="CosmosContainerFactory.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-using System;
-using System.Threading.Tasks;
-
 using Azure.Core;
-using Azure.Storage;
-using Azure.Storage.Blobs;
 
 using Corvus.Identity.ClientAuthentication.Azure;
 
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Corvus.Storage.Azure.BlobStorage
+namespace Corvus.Storage.Azure.Cosmos
 {
     /// <summary>
-    /// A factory for a <see cref="BlobContainerClient"/>.
+    /// A factory for a <see cref="Container"/>.
     /// </summary>
-    internal class BlobContainerClientFactory :
-        CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>,
-        IBlobContainerSourceByConfiguration
+    internal class CosmosContainerFactory :
+        TwoLevelCachingStorageContextFactory<CosmosClient, Container, CosmosContainerConfiguration, CosmosClientOptions>,
+        ICosmosContainerSourceByConfiguration
     {
         private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource;
         private readonly IServiceProvider serviceProvider;
 
         /// <summary>
-        /// Creates a <see cref="BlobContainerClientFactory"/>.
+        /// Creates a <see cref="CosmosContainerFactory"/>.
         /// </summary>
         /// <param name="azureTokenCredentialSource">
         /// Provides <see cref="TokenCredential"/>s in exchange for
@@ -38,7 +34,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// on <see cref="IServiceIdentityAzureTokenCredentialSource"/>, but only in certain
         /// scenarios.)
         /// </param>
-        public BlobContainerClientFactory(
+        public CosmosContainerFactory(
             IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource,
             IServiceProvider serviceProvider)
         {
@@ -47,18 +43,25 @@ namespace Corvus.Storage.Azure.BlobStorage
         }
 
         /// <inheritdoc/>
-        protected override async ValueTask<BlobContainerClient> CreateContextAsync(
-            BlobContainerConfiguration configuration,
-            BlobClientOptions? blobClientOptions)
+        protected override ValueTask<Container> CreateContextAsync(
+            CosmosClient parent, CosmosContainerConfiguration configuration, CosmosClientOptions? connectionOptions)
         {
-            BlobServiceClient blobClient = await this.CreateBlobServiceClientAsync(configuration, blobClientOptions)
-                .ConfigureAwait(false);
-
-            return blobClient.GetBlobContainerClient(configuration.Container);
+            Database db = parent.GetDatabase(configuration.Database);
+            return new ValueTask<Container>(db.GetContainer(configuration.Container));
         }
 
         /// <inheritdoc/>
-        protected override string GetCacheKeyForContext(BlobContainerConfiguration contextConfiguration)
+        protected override async ValueTask<CosmosClient> CreateParentContextAsync(
+            CosmosContainerConfiguration configuration, CosmosClientOptions? clientOptions)
+        {
+            CosmosClient client = await this.CreateCosmosClientAsync(configuration, clientOptions)
+                .ConfigureAwait(false);
+
+            return client;
+        }
+
+        /// <inheritdoc/>
+        protected override string GetCacheKeyForContext(CosmosContainerConfiguration contextConfiguration)
         {
             // TODO: there are many options for configuration, and we need to work out a sound way
             // to reduce that reliably to a cache key.
@@ -66,19 +69,30 @@ namespace Corvus.Storage.Azure.BlobStorage
             return System.Text.Json.JsonSerializer.Serialize(contextConfiguration);
         }
 
-        private async Task<BlobServiceClient> CreateBlobServiceClientAsync(
-            BlobContainerConfiguration configuration,
-            BlobClientOptions? blobClientOptions)
+        /// <inheritdoc/>
+        protected override string GetCacheKeyForParentContext(CosmosContainerConfiguration contextConfiguration)
         {
-            if (configuration is null)
+            CosmosContainerConfiguration nonContainerSpecificConfiguration = contextConfiguration with
             {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+                // StyleCop thinks this is a local call. It's probably because it doesn't
+                // understand with 'with' syntax. We should be able to remove this at
+                // some point, because StyleCop shouldn't be fazed by this.
+#pragma warning disable SA1101 // Prefix local calls with this
+                Container = null,
+#pragma warning restore SA1101 // Prefix local calls with this
+            };
 
+            return this.GetCacheKeyForContext(nonContainerSpecificConfiguration);
+        }
+
+        private async ValueTask<CosmosClient> CreateCosmosClientAsync(
+            CosmosContainerConfiguration configuration,
+            CosmosClientOptions? clientOptions)
+        {
             // TODO: Handle all the options properly. Check for valid combination.
             if (!string.IsNullOrWhiteSpace(configuration.ConnectionStringPlainText))
             {
-                return new BlobServiceClient(configuration.ConnectionStringPlainText, blobClientOptions);
+                return new CosmosClient(configuration.ConnectionStringPlainText, clientOptions);
             }
 
             if (configuration.ConnectionStringInKeyVault is not null)
@@ -86,24 +100,16 @@ namespace Corvus.Storage.Azure.BlobStorage
                 string? connectionString = await this.GetKeyVaultSecretFromConfigAsync(configuration.ConnectionStringInKeyVault).ConfigureAwait(false);
                 if (connectionString is not null)
                 {
-                    return new BlobServiceClient(connectionString, blobClientOptions);
-                }
-            }
-            else if (configuration.AccessKeyInKeyVault is not null && configuration.AccountName is not null)
-            {
-                string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(configuration.AccessKeyInKeyVault).ConfigureAwait(false);
-                if (accessKey is not null)
-                {
-                    return new BlobServiceClient(
-                        new Uri($"https://{configuration.AccountName}.blob.core.windows.net"),
-                        new StorageSharedKeyCredential(configuration.AccountName, accessKey),
-                        blobClientOptions);
+                    return new CosmosClient(connectionString, clientOptions);
                 }
             }
 
             throw new ArgumentException("Invalid configuration", nameof(configuration));
         }
 
+        // TODO:
+        //  1: move this into somewhere shared
+        //  2: add some means of triggering a re-read to support key rotation
         private async Task<string?> GetKeyVaultSecretFromConfigAsync(KeyVaultSecretConfiguration secretConfiguration)
         {
             // If no identity for the key vault is specified we use the ambient service

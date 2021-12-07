@@ -1,4 +1,4 @@
-﻿// <copyright file="ConnectionStringInPlainTextCommand.cs" company="Endjin Limited">
+﻿// <copyright file="BlobConnectionStringInPlainTextCommand.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -14,12 +14,12 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
     /// Command line handler for running the <see cref="UsingBlobStorageWithExplicitConfig"/>
     /// example with configuration that contains a connection string as plain text.
     /// </summary>
-    public class ConnectionStringInPlainTextCommand : UseBlobWithAppConfigurationBase
+    public class BlobConnectionStringInPlainTextCommand : UseBlobWithAppConfigurationBase
     {
         /// <summary>
-        /// Creates a <see cref="ConnectionStringInPlainTextCommand"/>.
+        /// Creates a <see cref="BlobConnectionStringInPlainTextCommand"/>.
         /// </summary>
-        public ConnectionStringInPlainTextCommand()
+        public BlobConnectionStringInPlainTextCommand()
             : base("connection-string-plain-text")
         {
         }

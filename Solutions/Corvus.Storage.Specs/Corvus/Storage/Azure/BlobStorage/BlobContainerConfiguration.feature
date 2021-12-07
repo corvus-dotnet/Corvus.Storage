@@ -3,12 +3,6 @@
     I need to be able to supply the necessary details and credentials in various different ways
     So that I can connect to the correct storage account while meeting the security requirements of my application
 
-#Scenario: Add two numbers
-#    Given the first number is 50
-#    And the second number is 70
-#    When the two numbers are added
-#    Then the result should be 120
-
 # Scenarios to check
 #
 # Just the connection string (with either embedded credentials, or:
@@ -24,16 +18,17 @@
 #  
 
 Scenario: Connection string in configuration
-    Given configuration of
+    Given BlobContainerConfiguration configuration of
         """
         {
-          "SomeStorageConfig": {
-            "ConnectionStringPlainText": "DefaultEndpointsProtocol=https;AccountName=mystorageaccount;AccountKey=mykey"
+          "config": {
+            "ConnectionStringPlainText": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;",
+            "Container": "MyContainer"
           }
         }
         """
-
-
-# Make support for legacy config a configurable thing, because it looks like entirely missing config ends
-# up looking like a valid configuration, because it defaults to handling a null or empty AccountName as meaning
-# "use local storage".
+    When I get a blob storage container for 'config' as 'c1'
+    And I get a blob storage container for 'config' as 'c2'
+    Then the storage client endpoint in 'c1' should be 'http://127.0.0.1:10000/devstoreaccount1/MyContainer'
+    # Would like to test that the AccountKey is also present, but there isn't a straightforward way to do that.
+    And the BlobContainerClient for containers 'c1' and 'c2' should be the same instance

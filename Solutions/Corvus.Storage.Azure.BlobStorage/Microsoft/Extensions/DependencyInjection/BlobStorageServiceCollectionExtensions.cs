@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <returns>The modified service collection.</returns>
-        public static IServiceCollection AddAzureBlobStorageClient(
+        public static IServiceCollection AddAzureBlobStorageClientSource(
             this IServiceCollection services)
         {
             return services

@@ -20,9 +20,14 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
             {
                 new Command("blob", "Azure Blob Storage commands")
                 {
-                    new AccessKeyInKeyVaultCommand(),
-                    new ConnectionStringInPlainTextCommand(),
-                    new ConnectionStringInKeyVaultCommand(),
+                    new BlobAccessKeyInKeyVaultCommand(),
+                    new BlobConnectionStringInPlainTextCommand(),
+                    new BlobConnectionStringInKeyVaultCommand(),
+                },
+                new Command("cosmos", "Azure Cosmos commands")
+                {
+                    new CosmosConnectionStringInPlainTextCommand(),
+                    new CosmosConnectionStringInKeyVaultCommand(),
                 },
             };
 
@@ -35,9 +40,11 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
                 {
                     ////builder
                     configureHost(builder);
-                    builder.UseCommandHandler<ConnectionStringInPlainTextCommand, ConnectionStringInPlainTextCommand.Run>();
-                    builder.UseCommandHandler<ConnectionStringInKeyVaultCommand, ConnectionStringInKeyVaultCommand.Run>();
-                    builder.UseCommandHandler<AccessKeyInKeyVaultCommand, AccessKeyInKeyVaultCommand.Run>();
+                    builder.UseCommandHandler<BlobConnectionStringInPlainTextCommand, BlobConnectionStringInPlainTextCommand.Run>();
+                    builder.UseCommandHandler<BlobConnectionStringInKeyVaultCommand, BlobConnectionStringInKeyVaultCommand.Run>();
+                    builder.UseCommandHandler<BlobAccessKeyInKeyVaultCommand, BlobAccessKeyInKeyVaultCommand.Run>();
+                    builder.UseCommandHandler<CosmosConnectionStringInPlainTextCommand, CosmosConnectionStringInPlainTextCommand.Run>();
+                    builder.UseCommandHandler<CosmosConnectionStringInKeyVaultCommand, CosmosConnectionStringInKeyVaultCommand.Run>();
                 })
                 .Build();
         }

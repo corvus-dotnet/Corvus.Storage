@@ -1,4 +1,4 @@
-﻿// <copyright file="ConnectionStringInKeyVaultCommand.cs" company="Endjin Limited">
+﻿// <copyright file="BlobAccessKeyInKeyVaultCommand.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -14,13 +14,13 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
     /// Command line handler for running the <see cref="UsingBlobStorageWithExplicitConfig"/>
     /// example with configuration that contains a connection string as plain text.
     /// </summary>
-    public class ConnectionStringInKeyVaultCommand : UseBlobWithAppConfigurationBase
+    public class BlobAccessKeyInKeyVaultCommand : UseBlobWithAppConfigurationBase
     {
         /// <summary>
-        /// Creates a <see cref="ConnectionStringInPlainTextCommand"/>.
+        /// Creates a <see cref="BlobConnectionStringInPlainTextCommand"/>.
         /// </summary>
-        public ConnectionStringInKeyVaultCommand()
-            : base("connection-string-key-vault")
+        public BlobAccessKeyInKeyVaultCommand()
+            : base("access-key-key-vault")
         {
         }
 
@@ -46,7 +46,7 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
 
             /// <inheritdoc/>
             protected override BlobContainerConfiguration GetConfiguration() =>
-                this.Configuration.BlobStorage.ConnectionStringInKeyVault;
+                this.Configuration.BlobStorage.AccessKeyInKeyVault;
         }
     }
 }
