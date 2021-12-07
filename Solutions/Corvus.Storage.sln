@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{53ACB9
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\GitVersion.yml = ..\GitVersion.yml
 		stylecop.json = stylecop.json
 		StyleCop.ruleset = StyleCop.ruleset
