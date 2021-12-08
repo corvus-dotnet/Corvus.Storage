@@ -32,6 +32,38 @@ public record CosmosContainerConfiguration
     public string Database { get; set; }
 
     /// <summary>
+    /// Gets or sets the URI of the Cosmos DB account.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Specifying the account URI is mutually exclusive with specifying a connection string.
+    /// </para>
+    /// </remarks>
+    public string? AccountUri { get; set; }
+
+    /// <summary>
+    /// Gets or sets the access key with which to connect.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is mainly intended for local development scenarios, in which the inconvenience of
+    /// putting the relevant secret in a key vault is not sufficiently offset by the increase in
+    /// security (e.g, because the account in use for development purposes is not sensitive).
+    /// </para>
+    /// <para>
+    /// Its use is discouraged for production purposes. Production scenarios will normally use
+    /// <see cref="AccessKeyInKeyVault"/> instead.
+    /// </para>
+    /// </remarks>
+    public string? AccessKeyPlainText { get; set; }
+
+    /// <summary>
+    /// Gets or sets the configuration describing how to retrieve the access key from
+    /// an Azure Key Vault.
+    /// </summary>
+    public KeyVaultSecretConfiguration? AccessKeyInKeyVault { get; set; }
+
+    /// <summary>
     /// Gets or sets the connection string with which to connect.
     /// </summary>
     /// <remarks>

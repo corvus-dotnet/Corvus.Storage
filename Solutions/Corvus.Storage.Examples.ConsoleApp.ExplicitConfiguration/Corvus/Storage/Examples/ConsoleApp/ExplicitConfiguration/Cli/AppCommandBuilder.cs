@@ -26,6 +26,7 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
                 },
                 new Command("cosmos", "Azure Cosmos commands")
                 {
+                    new CosmosAccessKeyInKeyVaultCommand(),
                     new CosmosConnectionStringInPlainTextCommand(),
                     new CosmosConnectionStringInKeyVaultCommand(),
                 },
@@ -43,6 +44,7 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
                     builder.UseCommandHandler<BlobConnectionStringInPlainTextCommand, BlobConnectionStringInPlainTextCommand.Run>();
                     builder.UseCommandHandler<BlobConnectionStringInKeyVaultCommand, BlobConnectionStringInKeyVaultCommand.Run>();
                     builder.UseCommandHandler<BlobAccessKeyInKeyVaultCommand, BlobAccessKeyInKeyVaultCommand.Run>();
+                    builder.UseCommandHandler<CosmosAccessKeyInKeyVaultCommand, CosmosAccessKeyInKeyVaultCommand.Run>();
                     builder.UseCommandHandler<CosmosConnectionStringInPlainTextCommand, CosmosConnectionStringInPlainTextCommand.Run>();
                     builder.UseCommandHandler<CosmosConnectionStringInKeyVaultCommand, CosmosConnectionStringInKeyVaultCommand.Run>();
                 })

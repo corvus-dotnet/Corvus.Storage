@@ -24,5 +24,11 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
         /// Gets or sets the Cosmos configuration that puts a connection string in key vault.
         /// </summary>
         public CosmosContainerConfiguration ConnectionStringInKeyVault { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Cosmos configuration that puts an access key in key vault, and
+        /// the account name in configuration.
+        /// </summary>
+        public CosmosContainerConfiguration AccessKeyInKeyVault { get; set; }
     }
 }

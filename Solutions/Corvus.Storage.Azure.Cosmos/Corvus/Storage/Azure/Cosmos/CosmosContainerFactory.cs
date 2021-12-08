@@ -104,6 +104,17 @@ namespace Corvus.Storage.Azure.Cosmos
                     return new CosmosClient(connectionString, clientOptions);
                 }
             }
+            else if (configuration.AccessKeyInKeyVault is not null && configuration.AccountUri is not null)
+            {
+                string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(configuration.AccessKeyInKeyVault).ConfigureAwait(false);
+                if (accessKey is not null)
+                {
+                    return new CosmosClient(
+                        configuration.AccountUri,
+                        accessKey,
+                        clientOptions);
+                }
+            }
 
             throw new ArgumentException("Invalid configuration", nameof(configuration));
         }
