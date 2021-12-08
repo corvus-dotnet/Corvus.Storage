@@ -1,25 +1,25 @@
-﻿// <copyright file="AccessKeyInKeyVaultCommand.cs" company="Endjin Limited">
+﻿// <copyright file="CosmosAccessKeyInKeyVaultCommand.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
 using System.CommandLine.Invocation;
 using System.Threading.Tasks;
 
-using Corvus.Storage.Azure.BlobStorage;
-using Corvus.Storage.Examples.Azure.BlobStorage;
+using Corvus.Storage.Azure.Cosmos;
+using Corvus.Storage.Examples.Azure.Cosmos;
 
 namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
 {
     /// <summary>
-    /// Command line handler for running the <see cref="UsingBlobStorageWithExplicitConfig"/>
+    /// Command line handler for running the <see cref="UsingCosmosWithExplicitConfig"/>
     /// example with configuration that contains a connection string as plain text.
     /// </summary>
-    public class AccessKeyInKeyVaultCommand : UseBlobWithAppConfigurationBase
+    public class CosmosAccessKeyInKeyVaultCommand : UseCosmosWithAppConfigurationBase
     {
         /// <summary>
-        /// Creates a <see cref="ConnectionStringInPlainTextCommand"/>.
+        /// Creates a <see cref="BlobConnectionStringInPlainTextCommand"/>.
         /// </summary>
-        public AccessKeyInKeyVaultCommand()
+        public CosmosAccessKeyInKeyVaultCommand()
             : base("access-key-key-vault")
         {
         }
@@ -32,12 +32,12 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
             /// <summary>
             /// Creates a <see cref="Run"/> instance.
             /// </summary>
-            /// <param name="useBlobWithExplicitConfig">The example that this command relies on.</param>
+            /// <param name="useCosmosWithExplicitConfig">The example that this command relies on.</param>
             /// <param name="configuration">Application configuration settings.</param>
             public Run(
-                UsingBlobStorageWithExplicitConfig useBlobWithExplicitConfig,
+                UsingCosmosWithExplicitConfig useCosmosWithExplicitConfig,
                 ApplicationConfigurationSettings configuration)
-                : base(useBlobWithExplicitConfig, configuration)
+                : base(useCosmosWithExplicitConfig, configuration)
             {
             }
 
@@ -45,8 +45,8 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli
             public override Task<int> InvokeAsync(InvocationContext context) => this.InvokeAsyncImpl(context);
 
             /// <inheritdoc/>
-            protected override BlobContainerConfiguration GetConfiguration() =>
-                this.Configuration.BlobStorage.AccessKeyInKeyVault;
+            protected override CosmosContainerConfiguration GetConfiguration() =>
+                this.Configuration.Cosmos.AccessKeyInKeyVault;
         }
     }
 }

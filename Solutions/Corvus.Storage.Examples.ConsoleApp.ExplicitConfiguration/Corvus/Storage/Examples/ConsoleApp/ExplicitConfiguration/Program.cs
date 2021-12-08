@@ -6,6 +6,7 @@ using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 
 using Corvus.Storage.Examples.Azure.BlobStorage;
+using Corvus.Storage.Examples.Azure.Cosmos;
 using Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration.Cli;
 
 using Microsoft.Extensions.Configuration;
@@ -28,12 +29,14 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
             {
                 ApplicationConfigurationSettings configuration = hostContext.Configuration.Get<ApplicationConfigurationSettings>();
                 services.AddSingleton(configuration);
-                services.AddAzureBlobStorageClient();
+                services.AddAzureBlobStorageClientSourceFromDynamicConfiguration();
+                services.AddCosmosContainerSourceFromDynamicConfiguration();
 
                 services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
                 services.AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration(configuration.ServiceIdentity);
 
                 services.AddSingleton<UsingBlobStorageWithExplicitConfig>();
+                services.AddSingleton<UsingCosmosWithExplicitConfig>();
             });
     }
 }

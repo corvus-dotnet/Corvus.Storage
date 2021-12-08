@@ -7,7 +7,8 @@ using Corvus.Identity.ClientAuthentication.Azure;
 namespace Corvus.Storage.Azure.BlobStorage
 {
     /// <summary>
-    /// Encapsulates configuration for a storage account.
+    /// Encapsulates configuration for a storage account, and optionally a particular container
+    /// within that account.
     /// </summary>
     public class BlobContainerConfiguration
     {
@@ -56,7 +57,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             this.AccessKeyInKeyVault = source.AccessKeyInKeyVault;
             this.ConnectionStringPlainText = source.ConnectionStringPlainText;
             this.ConnectionStringInKeyVault = source.ConnectionStringInKeyVault;
-            this.StorageClientIdentity = source.StorageClientIdentity;
+            this.ClientIdentity = source.ClientIdentity;
             this.Container = source.Container;
         }
 
@@ -133,7 +134,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// in conjunction with Azure AD authentication, or at least, not as of v12.10).
         /// </para>
         /// </remarks>
-        public ClientIdentityConfiguration? StorageClientIdentity { get; set; }
+        public ClientIdentityConfiguration? ClientIdentity { get; set; }
 
         /// <summary>
         /// Gets or sets the container name.

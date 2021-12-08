@@ -30,10 +30,14 @@ namespace Corvus.Storage
     /// retry settings, pipeline configuration).
     /// </typeparam>
     public abstract class CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions> :
-        IStorageContextSourceByConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
+        IStorageContextSourceFromDynamicConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
     {
         private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
-        private readonly Random random = new ();
+
+        /// <summary>
+        /// Gets a random number generated used for picking a delay time before retrying something.
+        /// </summary>
+        internal Random Random { get; } = new ();
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetStorageContextAsync(TConfiguration contextConfiguration, TConnectionOptions? connectionOptions)
@@ -62,7 +66,7 @@ namespace Corvus.Storage
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
                 // recreation that could happen if multiple threads are trying to rectify the failure simultanously.
-                await Task.Delay(this.random.Next(150, 250)).ConfigureAwait(false);
+                await Task.Delay(this.Random.Next(150, 250)).ConfigureAwait(false);
 
                 result = this.contexts.GetOrAdd(
                     key,

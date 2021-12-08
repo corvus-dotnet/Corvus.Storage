@@ -4,17 +4,29 @@
       "commandName": "Project",
       "commandLineArgs": "--help"
     },
-    "ConnectionStringPlainText": {
+    "Blob ConnectionStringPlainText": {
       "commandName": "Project",
       "commandLineArgs": "blob connection-string-plain-text"
     },
-    "ConnectionStringKeyVault": {
+    "Blob ConnectionStringKeyVault": {
       "commandName": "Project",
-      "commandLineArgs": "blob connection-string-key-vault"
+      "commandLineArgs": "cosmos connection-string-key-vault"
     },
-    "AccessKeyKeyVault": {
+    "Blob AccessKeyKeyVault": {
       "commandName": "Project",
       "commandLineArgs": "blob access-key-key-vault"
+    },
+    "Cosmos ConnectingStringPlainText": {
+      "commandName": "Project",
+      "commandLineArgs": "cosmos connection-string-plain-text"
+    },
+    "Cosmos ConnectionStringKeyVault": {
+      "commandName": "Project",
+      "commandLineArgs": "cosmos connection-string-key-vault"
+    },
+    "Cosmos AccessKeyKeyVault": {
+      "commandName": "Project",
+      "commandLineArgs": "cosmos access-key-key-vault"
     }
   }
 }

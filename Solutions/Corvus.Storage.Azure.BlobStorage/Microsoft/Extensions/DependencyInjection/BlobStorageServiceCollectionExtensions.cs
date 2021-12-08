@@ -12,16 +12,16 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class BlobStorageServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds an <see cref="IBlobContainerSourceByConfiguration"/> to the service collection.
+        /// Adds an <see cref="IBlobContainerSourceFromDynamicConfiguration"/> to the service collection.
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <returns>The modified service collection.</returns>
-        public static IServiceCollection AddAzureBlobStorageClient(
+        public static IServiceCollection AddAzureBlobStorageClientSourceFromDynamicConfiguration(
             this IServiceCollection services)
         {
             return services
                 .AddAzureTokenCredentialSourceFromDynamicConfiguration()
-                .AddSingleton<IBlobContainerSourceByConfiguration, BlobContainerClientFactory>();
+                .AddSingleton<IBlobContainerSourceFromDynamicConfiguration, BlobContainerClientFactory>();
         }
     }
 }
