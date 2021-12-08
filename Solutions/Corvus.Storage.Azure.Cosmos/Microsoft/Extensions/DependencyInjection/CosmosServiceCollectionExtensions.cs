@@ -12,16 +12,16 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class CosmosServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds an <see cref="ICosmosContainerSourceByConfiguration"/> to the service collection.
+        /// Adds an <see cref="ICosmosContainerSourceFromDynamicConfiguration"/> to the service collection.
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <returns>The modified service collection.</returns>
-        public static IServiceCollection AddCosmosContainerSource(
+        public static IServiceCollection AddCosmosContainerSourceFromDynamicConfiguration(
             this IServiceCollection services)
         {
             return services
                 .AddAzureTokenCredentialSourceFromDynamicConfiguration()
-                .AddSingleton<ICosmosContainerSourceByConfiguration, CosmosContainerFactory>();
+                .AddSingleton<ICosmosContainerSourceFromDynamicConfiguration, CosmosContainerFactory>();
         }
     }
 }

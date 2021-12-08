@@ -1,4 +1,4 @@
-﻿// <copyright file="IBlobContainerSourceByConfiguration.cs" company="Endjin Limited">
+﻿// <copyright file="IBlobContainerSourceFromDynamicConfiguration.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -11,8 +11,8 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// <see cref="BlobContainerConfiguration"/> objects, and wants to get access to the
     /// <see cref="BlobContainerClient"/> objects these represent.
     /// </summary>
-    public interface IBlobContainerSourceByConfiguration :
-        IStorageContextSourceByConfiguration<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>
+    public interface IBlobContainerSourceFromDynamicConfiguration :
+        IStorageContextSourceFromDynamicConfiguration<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>
     {
     }
 }

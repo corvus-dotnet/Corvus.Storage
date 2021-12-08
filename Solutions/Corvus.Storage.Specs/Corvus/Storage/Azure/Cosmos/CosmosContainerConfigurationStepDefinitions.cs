@@ -22,17 +22,17 @@ namespace Corvus.Storage.Azure.Cosmos
     public class CosmosContainerConfigurationStepDefinitions : IDisposable
     {
         private readonly ServiceProvider serviceProvider;
-        private readonly ICosmosContainerSourceByConfiguration containerSource;
+        private readonly ICosmosContainerSourceFromDynamicConfiguration containerSource;
         private readonly Dictionary<string, CosmosContainerConfiguration> configurations = new ();
         private readonly Dictionary<string, Container> containers = new ();
 
         public CosmosContainerConfigurationStepDefinitions()
         {
             ServiceCollection services = new ();
-            services.AddCosmosContainerSource();
+            services.AddCosmosContainerSourceFromDynamicConfiguration();
             this.serviceProvider = services.BuildServiceProvider();
 
-            this.containerSource = this.serviceProvider.GetRequiredService<ICosmosContainerSourceByConfiguration>();
+            this.containerSource = this.serviceProvider.GetRequiredService<ICosmosContainerSourceFromDynamicConfiguration>();
         }
 
         public void Dispose()

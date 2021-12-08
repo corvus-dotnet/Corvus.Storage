@@ -23,17 +23,17 @@ namespace Corvus.Storage.Azure.BlobStorage
     public class BlobContainerConfigurationStepDefinitions : IDisposable
     {
         private readonly ServiceProvider serviceProvider;
-        private readonly IBlobContainerSourceByConfiguration containerSource;
+        private readonly IBlobContainerSourceFromDynamicConfiguration containerSource;
         private readonly Dictionary<string, BlobContainerConfiguration> configurations = new ();
         private readonly Dictionary<string, BlobContainerClient> containers = new ();
 
         public BlobContainerConfigurationStepDefinitions()
         {
             ServiceCollection services = new ();
-            services.AddAzureBlobStorageClientSource();
+            services.AddAzureBlobStorageClientSourceFromDynamicConfiguration();
             this.serviceProvider = services.BuildServiceProvider();
 
-            this.containerSource = this.serviceProvider.GetRequiredService<IBlobContainerSourceByConfiguration>();
+            this.containerSource = this.serviceProvider.GetRequiredService<IBlobContainerSourceFromDynamicConfiguration>();
         }
 
         public void Dispose()

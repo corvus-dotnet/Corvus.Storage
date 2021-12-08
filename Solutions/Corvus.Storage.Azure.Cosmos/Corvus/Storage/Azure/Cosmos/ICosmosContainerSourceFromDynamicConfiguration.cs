@@ -1,4 +1,4 @@
-﻿// <copyright file="ICosmosContainerSourceByConfiguration.cs" company="Endjin Limited">
+﻿// <copyright file="ICosmosContainerSourceFromDynamicConfiguration.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace Corvus.Storage.Azure.Cosmos;
 /// <see cref="CosmosContainerConfiguration"/> objects, and wants to get access to the
 /// <see cref="Container"/> objects these represent.
 /// </summary>
-public interface ICosmosContainerSourceByConfiguration :
-        IStorageContextSourceByConfiguration<Container, CosmosContainerConfiguration, CosmosClientOptions>
+public interface ICosmosContainerSourceFromDynamicConfiguration :
+        IStorageContextSourceFromDynamicConfiguration<Container, CosmosContainerConfiguration, CosmosClientOptions>
 {
 }

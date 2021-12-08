@@ -21,14 +21,14 @@ namespace Corvus.Storage.Examples.Azure.BlobStorage
     /// </summary>
     public class UsingBlobStorageWithExplicitConfig
     {
-        private readonly IBlobContainerSourceByConfiguration blobContainerFactory;
+        private readonly IBlobContainerSourceFromDynamicConfiguration blobContainerFactory;
 
         /// <summary>
         /// Creates a <see cref="UsingBlobStorageWithExplicitConfig"/>.
         /// </summary>
         /// <param name="blobContainerFactory">Source of blob container clients.</param>
         public UsingBlobStorageWithExplicitConfig(
-            IBlobContainerSourceByConfiguration blobContainerFactory)
+            IBlobContainerSourceFromDynamicConfiguration blobContainerFactory)
         {
             this.blobContainerFactory = blobContainerFactory;
         }

@@ -18,14 +18,14 @@ namespace Corvus.Storage.Examples.Azure.Cosmos;
 /// </summary>
 public class UsingCosmosWithExplicitConfig
 {
-    private readonly ICosmosContainerSourceByConfiguration cosmosContainerFactory;
+    private readonly ICosmosContainerSourceFromDynamicConfiguration cosmosContainerFactory;
 
     /// <summary>
     /// Creates a <see cref="UsingCosmosWithExplicitConfig"/>.
     /// </summary>
     /// <param name="cosmosContainerFactory">Source of cosmos containers.</param>
     public UsingCosmosWithExplicitConfig(
-        ICosmosContainerSourceByConfiguration cosmosContainerFactory)
+        ICosmosContainerSourceFromDynamicConfiguration cosmosContainerFactory)
     {
         this.cosmosContainerFactory = cosmosContainerFactory;
     }

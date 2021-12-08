@@ -20,7 +20,7 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// </summary>
     internal class BlobContainerClientFactory :
         CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>,
-        IBlobContainerSourceByConfiguration
+        IBlobContainerSourceFromDynamicConfiguration
     {
         private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource;
         private readonly IServiceProvider serviceProvider;

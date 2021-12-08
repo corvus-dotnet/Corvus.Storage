@@ -65,7 +65,7 @@ public record CosmosContainerConfiguration
     /// This is nullable because some applications may choose to store a single configuration
     /// for the database, instead of having to store multiple near-identical configurations for all
     /// the containers it uses in that database. However, this must be non-null when passed to
-    /// <see cref="ICosmosContainerSourceByConfiguration"/>.
+    /// <see cref="ICosmosContainerSourceFromDynamicConfiguration"/>.
     /// </remarks>
     public string? Container { get; set; }
 }

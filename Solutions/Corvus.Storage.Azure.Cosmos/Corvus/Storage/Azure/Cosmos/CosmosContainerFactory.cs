@@ -16,7 +16,7 @@ namespace Corvus.Storage.Azure.Cosmos
     /// </summary>
     internal class CosmosContainerFactory :
         TwoLevelCachingStorageContextFactory<CosmosClient, Container, CosmosContainerConfiguration, CosmosClientOptions>,
-        ICosmosContainerSourceByConfiguration
+        ICosmosContainerSourceFromDynamicConfiguration
     {
         private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource;
         private readonly IServiceProvider serviceProvider;

@@ -1,4 +1,4 @@
-﻿// <copyright file="IStorageContextSourceByConfiguration.cs" company="Endjin Limited">
+﻿// <copyright file="IStorageContextSourceFromDynamicConfiguration.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -23,7 +23,7 @@ namespace Corvus.Storage
     /// The type containing information describing the particular connection requirements (e.g.,
     /// retry settings, pipeline configuration).
     /// </typeparam>
-    public interface IStorageContextSourceByConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
+    public interface IStorageContextSourceFromDynamicConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
     {
         /// <summary>
         /// Gets a <typeparamref name="TStorageContext"/>  for the context described in a

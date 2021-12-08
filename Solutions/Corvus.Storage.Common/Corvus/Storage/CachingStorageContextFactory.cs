@@ -30,7 +30,7 @@ namespace Corvus.Storage
     /// retry settings, pipeline configuration).
     /// </typeparam>
     public abstract class CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions> :
-        IStorageContextSourceByConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
+        IStorageContextSourceFromDynamicConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
     {
         private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
 

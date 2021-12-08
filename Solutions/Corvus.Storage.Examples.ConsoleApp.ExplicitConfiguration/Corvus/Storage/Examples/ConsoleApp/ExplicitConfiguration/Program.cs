@@ -29,8 +29,8 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
             {
                 ApplicationConfigurationSettings configuration = hostContext.Configuration.Get<ApplicationConfigurationSettings>();
                 services.AddSingleton(configuration);
-                services.AddAzureBlobStorageClientSource();
-                services.AddCosmosContainerSource();
+                services.AddAzureBlobStorageClientSourceFromDynamicConfiguration();
+                services.AddCosmosContainerSourceFromDynamicConfiguration();
 
                 services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
                 services.AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration(configuration.ServiceIdentity);
