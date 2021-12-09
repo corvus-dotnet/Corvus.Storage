@@ -19,7 +19,7 @@ using TechTalk.SpecFlow;
 namespace Corvus.Storage.Azure.Cosmos
 {
     [Binding]
-    public class CosmosContainerConfigurationStepDefinitions : IDisposable
+    public sealed class CosmosContainerConfigurationStepDefinitions : IDisposable
     {
         private readonly ServiceProvider serviceProvider;
         private readonly ICosmosContainerSourceFromDynamicConfiguration containerSource;
@@ -59,7 +59,7 @@ namespace Corvus.Storage.Azure.Cosmos
         public async Task WhenIGetACosmosDBContainer(string configName, string containerName)
         {
             CosmosContainerConfiguration config = this.configurations[configName];
-            Container container = await this.containerSource.GetStorageContextAsync(config);
+            Container container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
         }
 

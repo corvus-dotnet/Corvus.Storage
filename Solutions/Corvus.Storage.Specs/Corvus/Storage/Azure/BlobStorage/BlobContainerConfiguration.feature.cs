@@ -82,7 +82,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Connection string in configuration", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 26
+#line 20
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -102,9 +102,26 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 27
-    testRunner.Given("configuration of", "{\r\n  \"SomeStorageConfig\": {\r\n    \"ConnectionStringPlainText\": \"DefaultEndpointsPr" +
-                        "otocol=https;AccountName=mystorageaccount;AccountKey=mykey\"\r\n  }\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 21
+    testRunner.Given("BlobContainerConfiguration configuration of", @"{
+  ""config"": {
+    ""ConnectionStringPlainText"": ""DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"",
+    ""Container"": ""MyContainer""
+  }
+}", ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 30
+    testRunner.When("I get a blob storage container for \'config\' as \'c1\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 31
+    testRunner.And("I get a blob storage container for \'config\' as \'c2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 32
+    testRunner.Then("the storage client endpoint in \'c1\' should be \'http://127.0.0.1:10000/devstoreacc" +
+                        "ount1/MyContainer\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 34
+    testRunner.And("the BlobContainerClient for containers \'c1\' and \'c2\' should be the same instance", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

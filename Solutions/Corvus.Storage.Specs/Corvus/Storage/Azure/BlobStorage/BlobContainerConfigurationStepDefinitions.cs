@@ -20,7 +20,7 @@ using TechTalk.SpecFlow;
 namespace Corvus.Storage.Azure.BlobStorage
 {
     [Binding]
-    public class BlobContainerConfigurationStepDefinitions : IDisposable
+    public sealed class BlobContainerConfigurationStepDefinitions : IDisposable
     {
         private readonly ServiceProvider serviceProvider;
         private readonly IBlobContainerSourceFromDynamicConfiguration containerSource;
@@ -60,7 +60,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         public async Task WhenIGetABlobStorageContainerForAs(string configName, string containerName)
         {
             BlobContainerConfiguration config = this.configurations[configName];
-            BlobContainerClient container = await this.containerSource.GetStorageContextAsync(config);
+            BlobContainerClient container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
         }
 
