@@ -103,8 +103,8 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 22
-    testRunner.Given("CosmosContainerConfiguration \'config\' of", @"{
-  ""SomeCosmosConfig"": {
+    testRunner.Given("CosmosContainerConfiguration of", @"{
+  ""config"": {
     ""ConnectionStringPlainText"": ""AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="",
     ""Database"": ""MyDb"",
     ""Container"": ""MyContainer""
@@ -127,6 +127,75 @@ this.ScenarioInitialize(scenarioInfo);
     testRunner.And("the Cosmos Container in \'c1\' is \'MyContainer\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 42
+    testRunner.And("the CosmosClient for containers \'c1\' and \'c2\' should be the same instance", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Connection string in configuration with same database, different containers")]
+        public virtual void ConnectionStringInConfigurationWithSameDatabaseDifferentContainers()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Connection string in configuration with same database, different containers", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 46
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 47
+    testRunner.Given("CosmosContainerConfiguration of", @"{
+  ""config1"": {
+    ""ConnectionStringPlainText"": ""AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="",
+    ""Database"": ""MyDb"",
+    ""Container"": ""MyContainer1""
+  },
+  ""config2"": {
+    ""ConnectionStringPlainText"": ""AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="",
+    ""Database"": ""MyDb"",
+    ""Container"": ""MyContainer2""
+  }
+}", ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 62
+    testRunner.When("I get a Cosmos DB container for \'config1\' as \'c1\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 63
+    testRunner.And("I get a Cosmos DB container for \'config2\' as \'c2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 64
+    testRunner.Then("the CosmosClient.Endpoint in \'c1\' should be \'https://localhost:8081/\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 70
+    testRunner.And("the Cosmos Database in \'c1\' is \'MyDb\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 71
+    testRunner.And("the Cosmos Database in \'c2\' is \'MyDb\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 72
+    testRunner.And("the Cosmos Container in \'c1\' is \'MyContainer1\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 73
+    testRunner.And("the Cosmos Container in \'c2\' is \'MyContainer2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 74
     testRunner.And("the CosmosClient for containers \'c1\' and \'c2\' should be the same instance", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
