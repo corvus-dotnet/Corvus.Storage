@@ -353,3 +353,4 @@ MigrationBackup/
 /Solutions/**/local.settings.json
 
 .docs/
+*.feature.cs

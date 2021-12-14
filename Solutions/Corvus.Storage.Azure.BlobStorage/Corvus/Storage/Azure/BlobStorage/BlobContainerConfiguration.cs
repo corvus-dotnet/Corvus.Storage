@@ -140,11 +140,17 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// Gets or sets the container name.
         /// </summary>
         /// <remarks>
+        /// <para>
         /// This must be the actual container name, so it must conform to the naming rules imposed
         /// by Azure, and it must unique within the storage account for this configuration, and for
-        /// any other configurations referring to the same storage account.
-        /// TODO: the original docs point people at TenantedContainerNaming.MakeUniqueSafeBlobContainerName(string, string)
-        /// We may need to introduce something similar.
+        /// any other configurations referring to the same storage account. You can use the
+        /// <see cref="AzureStorageBlobContainerNaming.HashAndEncodeBlobContainerName(string)"/>
+        /// to convert any string into a blob container name. This uses a hash function to create a
+        /// name that conforms to the rules, and which is exceedingly unlikely to clash with any
+        /// other name. (The names it produces also bear no obvious relation to the names you pass
+        /// in, which is either a security feature, or very annoying, depending on your
+        /// perspective.)
+        /// </para>
         /// </remarks>
         public string? Container { get; set; }
 
