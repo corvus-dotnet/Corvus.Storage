@@ -41,6 +41,7 @@ namespace Corvus.Storage
     /// </remarks>
     public abstract class TwoLevelCachingStorageContextFactory<TStorageContextParent, TStorageContext, TConfiguration, TConnectionOptions> :
         CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions>
+        where TConnectionOptions : class
     {
         private readonly ConcurrentDictionary<string, Task<TStorageContextParent>> parentContexts = new ();
 
@@ -49,7 +50,7 @@ namespace Corvus.Storage
             TConfiguration configuration,
             TConnectionOptions? connectionOptions)
         {
-            string parentContextKey = this.GetCacheKeyForParentContext(configuration);
+            string parentContextKey = this.GetCacheKeyForParentContext(configuration, connectionOptions);
 
             Task<TStorageContextParent> parentContextTask = this.parentContexts.GetOrAdd(
                 parentContextKey,
@@ -100,6 +101,25 @@ namespace Corvus.Storage
             TConnectionOptions? connectionOptions);
 
         /// <summary>
+        /// Produces a unique cache key based on the combination of a particular storage context
+        /// that the configuration identifies, and a particular set of connection options.
+        /// </summary>
+        /// <param name="contextConfiguration">
+        /// Configuration describing the storage context.
+        /// </param>
+        /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
+        /// <returns>
+        /// A key that is unique to the combination of the storage context identified by this
+        /// configuration and the specified connection options.
+        /// </returns>
+        protected virtual string GetCacheKeyForParentContext(
+            TConfiguration contextConfiguration,
+            TConnectionOptions? connectionOptions)
+        {
+            return this.GetCacheKeyForParentConfiguration(contextConfiguration) + "/" + this.GetCacheKeyForConnectionOptions(connectionOptions);
+        }
+
+        /// <summary>
         /// Produces a unique cache key based on the particular storage context that the
         /// configuration identifies.
         /// </summary>
@@ -109,6 +129,6 @@ namespace Corvus.Storage
         /// <returns>
         /// A key that is unique to the storage context identified by this configuration.
         /// </returns>
-        protected abstract string GetCacheKeyForParentContext(TConfiguration contextConfiguration);
+        protected abstract string GetCacheKeyForParentConfiguration(TConfiguration contextConfiguration);
     }
 }

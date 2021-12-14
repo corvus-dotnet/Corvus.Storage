@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Azure;
@@ -31,8 +33,11 @@ namespace Corvus.Storage
     /// </typeparam>
     public abstract class CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions> :
         IStorageContextSourceFromDynamicConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
+        where TConnectionOptions : class
     {
         private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
+        private readonly List<(WeakReference<TConnectionOptions> Options, string Id)> trackedConnections = new ();
+        private int nextConnectionsOptionsId = 1;
 
         /// <summary>
         /// Gets a random number generated used for picking a delay time before retrying something.
@@ -47,7 +52,7 @@ namespace Corvus.Storage
                 throw new ArgumentNullException(nameof(contextConfiguration));
             }
 
-            string key = this.GetCacheKeyForContext(contextConfiguration);
+            string key = this.GetCacheKeyForContext(contextConfiguration, connectionOptions);
 
             // TODO: what about contexts that need a rental modal because they don't support
             // concurrent use?
@@ -130,12 +135,33 @@ namespace Corvus.Storage
         /// <summary>
         /// Create the context.
         /// </summary>
-        /// <param name="configuration">The container configuration.</param>
+        /// <param name="contextConfiguration">
+        /// Configuration describing the storage context.
+        /// </param>
         /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
         protected abstract ValueTask<TStorageContext> CreateContextAsync(
-            TConfiguration configuration,
+            TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions);
+
+        /// <summary>
+        /// Produces a unique cache key based on the combination of a particular storage context
+        /// that the configuration identifies, and a particular set of connection options.
+        /// </summary>
+        /// <param name="contextConfiguration">
+        /// Configuration describing the storage context.
+        /// </param>
+        /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
+        /// <returns>
+        /// A key that is unique to the combination of the storage context identified by this
+        /// configuration and the specified connection options.
+        /// </returns>
+        protected virtual string GetCacheKeyForContext(
+            TConfiguration contextConfiguration,
+            TConnectionOptions? connectionOptions)
+        {
+            return this.GetCacheKeyForConfiguration(contextConfiguration) + "/" + this.GetCacheKeyForConnectionOptions(connectionOptions);
+        }
 
         /// <summary>
         /// Produces a unique cache key based on the particular storage context that the
@@ -147,6 +173,67 @@ namespace Corvus.Storage
         /// <returns>
         /// A key that is unique to the storage context identified by this configuration.
         /// </returns>
-        protected abstract string GetCacheKeyForContext(TConfiguration contextConfiguration);
+        protected abstract string GetCacheKeyForConfiguration(
+            TConfiguration contextConfiguration);
+
+        /// <summary>
+        /// Produces a unique cache key based on a particular set of connection options.
+        /// </summary>
+        /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
+        /// <returns>
+        /// A key that is unique to the specified connection options.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// This default implementation is designed for when connection options types don't provide
+        /// a good way to inspect their contents. (Sadly, most of these types in the Azure SDK
+        /// don't support this because a lot of the interested state is not publicly visible.)
+        /// The best we can do at this point is track specific instances we've seen before,
+        /// which we do via weak references.
+        /// </para>
+        /// </remarks>
+        protected virtual string GetCacheKeyForConnectionOptions(
+            TConnectionOptions? connectionOptions)
+        {
+            if (connectionOptions == null)
+            {
+                return "none";
+            }
+
+            lock (this.trackedConnections)
+            {
+                string? id = null;
+                for (int i = this.trackedConnections.Count - 1; i >= 0; i--)
+                {
+                    (WeakReference<TConnectionOptions> weakRef, string currentId) = this.trackedConnections[i];
+                    if (weakRef.TryGetTarget(out TConnectionOptions? currentOptions))
+                    {
+                        if (ReferenceEquals(currentOptions, connectionOptions))
+                        {
+                            if (id is not null)
+                            {
+                                throw new InvalidOperationException("Error! Same connection options has ended up with more than one id");
+                            }
+
+                            id = currentId;
+
+                            // We don't break at this point because we want to clear out any defunct WeakReferences.
+                        }
+                    }
+                    else
+                    {
+                        this.trackedConnections.RemoveAt(i);
+                    }
+                }
+
+                if (id == null)
+                {
+                    id = (this.nextConnectionsOptionsId++).ToString();
+                    this.trackedConnections.Add((new WeakReference<TConnectionOptions>(connectionOptions), id));
+                }
+
+                return id;
+            }
+        }
     }
 }
