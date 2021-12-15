@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Azure;
@@ -13,6 +13,8 @@ using Azure.Core;
 using Azure.Security.KeyVault.Secrets;
 
 using Corvus.Identity.ClientAuthentication.Azure;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corvus.Storage
 {
@@ -23,6 +25,9 @@ namespace Corvus.Storage
     /// The type of storage context (e.g., a blob container, a CosmosDB collection, or a SQL
     /// database).
     /// </typeparam>
+    /// <typeparam name="TContextData">
+    /// Data that the derived type wishes to associate with a cached <typeparamref name="TStorageContext"/>.
+    /// </typeparam>
     /// <typeparam name="TConfiguration">
     /// The type containing the information identifying a particular physical, tenant-specific
     /// instance of a context.
@@ -31,21 +36,44 @@ namespace Corvus.Storage
     /// The type containing information describing the particular connection requirements (e.g.,
     /// retry settings, pipeline configuration).
     /// </typeparam>
-    public abstract class CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions> :
+    internal abstract class CachingStorageContextFactory<TStorageContext, TContextData, TConfiguration, TConnectionOptions> :
         IStorageContextSourceFromDynamicConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
         where TConnectionOptions : class
     {
-        private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
+        private readonly ConcurrentDictionary<string, Task<(TStorageContext, TContextData)>> contexts = new ();
         private readonly List<(WeakReference<TConnectionOptions> Options, string Id)> trackedConnections = new ();
+        private readonly IServiceProvider serviceProvider;
+        private IAzureTokenCredentialSourceFromDynamicConfiguration? azureTokenCredentialSourceFromConfig;
         private int nextConnectionsOptionsId = 1;
+
+        /// <summary>
+        /// Creates a <see cref="CachingStorageContextFactory{TStorageContext, TContextData, TConfiguration, TConnectionOptions}"/>.
+        /// </summary>
+        /// <param name="serviceProvider">
+        /// Provides access to dependencies that are only needed in certain scenarios, and which
+        /// we don't want to cause a DI initialization failure for if they are absent. (We depend
+        /// on <see cref="IServiceIdentityAzureTokenCredentialSource"/>, but only in certain
+        /// scenarios.)
+        /// </param>
+        protected CachingStorageContextFactory(
+            IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
 
         /// <summary>
         /// Gets a random number generated used for picking a delay time before retrying something.
         /// </summary>
         internal Random Random { get; } = new ();
 
+        private IAzureTokenCredentialSourceFromDynamicConfiguration AzureTokenCredentialSourceFromConfig
+            => this.azureTokenCredentialSourceFromConfig ??= this.serviceProvider.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>();
+
         /// <inheritdoc/>
-        public async ValueTask<TStorageContext> GetStorageContextAsync(TConfiguration contextConfiguration, TConnectionOptions? connectionOptions)
+        public async ValueTask<TStorageContext> GetStorageContextAsync(
+            TConfiguration contextConfiguration,
+            TConnectionOptions? connectionOptions,
+            CancellationToken cancellationToken)
         {
             if (contextConfiguration is null)
             {
@@ -56,9 +84,9 @@ namespace Corvus.Storage
 
             // TODO: what about contexts that need a rental modal because they don't support
             // concurrent use?
-            Task<TStorageContext> result = this.contexts.GetOrAdd(
+            Task<(TStorageContext, TContextData)> result = this.contexts.GetOrAdd(
                 key,
-                async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions).ConfigureAwait(false));
+                async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions, cancellationToken).ConfigureAwait(false));
 
             if (result.IsFaulted)
             {
@@ -67,69 +95,40 @@ namespace Corvus.Storage
                 // failed. As such, we will remove the item from the dictionary, and attempt to create a new one to
                 // return. If removing the value fails, that's likely because it's been removed by a different thread,
                 // so we will ignore that and just attempt to create and return a new value anyway.
-                this.contexts.TryRemove(key, out Task<TStorageContext> _);
+                this.contexts.TryRemove(key, out Task<(TStorageContext, TContextData)> _);
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
                 // recreation that could happen if multiple threads are trying to rectify the failure simultanously.
-                await Task.Delay(this.Random.Next(150, 250)).ConfigureAwait(false);
+                await Task.Delay(this.Random.Next(150, 250), cancellationToken).ConfigureAwait(false);
 
                 result = this.contexts.GetOrAdd(
                     key,
-                    async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions).ConfigureAwait(false));
+                    async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions, cancellationToken).ConfigureAwait(false));
             }
 
-            return await result.ConfigureAwait(false);
+            (TStorageContext context, _) = await result.ConfigureAwait(false);
+            return context;
         }
 
-        /// <summary>
-        /// Retrieves a secret from Azure Key Vault.
-        /// </summary>
-        /// <param name="azureServicesAuthConnectionString">
-        /// The connection string determining the credentials with which to connect to Azure Storage.
-        /// </param>
-        /// <param name="keyVaultName">
-        /// The name of the key vault.
-        /// </param>
-        /// <param name="secretName">
-        /// The name of the secret in the key vault.
-        /// </param>
-        /// <returns>
-        /// A task producing the secret.
-        /// </returns>
-        protected async ValueTask<string> GetKeyVaultSecretAsync(
-            string? azureServicesAuthConnectionString,
-            string keyVaultName,
-            string secretName)
+        /// <inheritdoc/>
+        public async ValueTask<TStorageContext> GetReplacementForFailedStorageContextAsync(
+            TConfiguration contextConfiguration,
+            TConnectionOptions? connectionOptions,
+            CancellationToken cancellationToken)
         {
-            var keyVaultCredentials = LegacyAzureServiceTokenProviderConnectionString.ToTokenCredential(azureServicesAuthConnectionString ?? string.Empty);
-            return await this.GetKeyVaultSecretAsync(keyVaultCredentials, keyVaultName, secretName).ConfigureAwait(false);
-        }
+            string key = this.GetCacheKeyForContext(contextConfiguration, connectionOptions);
+            if (this.contexts.TryRemove(key, out Task<(TStorageContext, TContextData)>? cacheEntry))
+            {
+                (_, TContextData contextData) = await cacheEntry.ConfigureAwait(false);
 
-        /// <summary>
-        /// Retrieves a secret from Azure Key Vault.
-        /// </summary>
-        /// <param name="tokenCredential">
-        /// The connection string determining the credentials with which to connect to Azure Storage.
-        /// </param>
-        /// <param name="keyVaultName">
-        /// The name of the key vault.
-        /// </param>
-        /// <param name="secretName">
-        /// The name of the secret in the key vault.
-        /// </param>
-        /// <returns>
-        /// A task producing the secret.
-        /// </returns>
-        protected async ValueTask<string> GetKeyVaultSecretAsync(
-            TokenCredential tokenCredential,
-            string keyVaultName,
-            string secretName)
-        {
-            var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
-            var keyVaultClient = new SecretClient(keyVaultUri, tokenCredential);
+                await this.InvalidateForConfigurationAsync(
+                    contextConfiguration, contextData, connectionOptions, cancellationToken)
+                    .ConfigureAwait(false);
+            }
 
-            Response<KeyVaultSecret> accountKeyResponse = await keyVaultClient.GetSecretAsync(secretName).ConfigureAwait(false);
-            return accountKeyResponse.Value.Value;
+            return await this.GetStorageContextAsync(
+                contextConfiguration, connectionOptions, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -139,10 +138,14 @@ namespace Corvus.Storage
         /// Configuration describing the storage context.
         /// </param>
         /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
+        /// <param name="cancellationToken">
+        /// May enable the operation to be cancelled.
+        /// </param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
-        protected abstract ValueTask<TStorageContext> CreateContextAsync(
+        protected abstract ValueTask<(TStorageContext Context, TContextData ContextData)> CreateContextAsync(
             TConfiguration contextConfiguration,
-            TConnectionOptions? connectionOptions);
+            TConnectionOptions? connectionOptions,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Produces a unique cache key based on the combination of a particular storage context
@@ -234,6 +237,69 @@ namespace Corvus.Storage
 
                 return id;
             }
+        }
+
+        /// <summary>
+        /// Invalidate anything that should be invalidated (e.g. cached client identities) when
+        /// the application has indicated that a context has become invalid.
+        /// </summary>
+        /// <param name="contextConfiguration">
+        /// Configuration describing the storage context.
+        /// </param>
+        /// <param name="data">
+        /// The additional data stored in the cache for this entry.
+        /// </param>
+        /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
+        /// <param name="cancellationToken">
+        /// May enable the operation to be cancelled.
+        /// </param>
+        /// <returns>A <see cref="ValueTask"/> that completes when invalidation is complete.</returns>
+        protected abstract ValueTask InvalidateForConfigurationAsync(
+            TConfiguration contextConfiguration,
+            TContextData data,
+            TConnectionOptions? connectionOptions,
+            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Retrieves a secret from Azure Key Vault.
+        /// </summary>
+        /// <param name="secretConfiguration">
+        /// Describes the secret to retrieve.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// May enable the operation to be cancelled.
+        /// </param>
+        /// <returns>
+        /// A task producing the secret, or null of no secret was found.
+        /// </returns>
+        protected async ValueTask<(string?, IAzureTokenCredentialSource)> GetKeyVaultSecretFromConfigAsync(
+            KeyVaultSecretConfiguration secretConfiguration,
+            CancellationToken cancellationToken)
+        {
+            // If no identity for the key vault is specified we use the ambient service
+            // identity. Otherwise, we use the identity configuration supplied.
+            IAzureTokenCredentialSource credentialSource = secretConfiguration.VaultClientIdentity is null
+                ? this.serviceProvider.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>()
+                : await this.AzureTokenCredentialSourceFromConfig
+                    .CredentialSourceForConfigurationAsync(secretConfiguration.VaultClientIdentity, cancellationToken)
+                    .ConfigureAwait(false);
+            TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (keyVaultCredentials is not null)
+            {
+                var keyVaultUri = new Uri($"https://{secretConfiguration.VaultName}.vault.azure.net/");
+                var keyVaultClient = new SecretClient(keyVaultUri, keyVaultCredentials);
+
+                Response<KeyVaultSecret> accountKeyResponse = await keyVaultClient.GetSecretAsync(
+                    secretConfiguration.SecretName,
+                    cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
+                string secret = accountKeyResponse.Value.Value;
+
+                return (secret, credentialSource);
+            }
+
+            return (null, credentialSource);
         }
     }
 }

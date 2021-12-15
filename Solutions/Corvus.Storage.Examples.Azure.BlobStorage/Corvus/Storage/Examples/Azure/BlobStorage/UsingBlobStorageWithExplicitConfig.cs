@@ -48,7 +48,13 @@ namespace Corvus.Storage.Examples.Azure.BlobStorage
             string containerName,
             string id)
         {
-            BlobContainerConfiguration containerConfig = baseConfiguration.ForContainer(containerName);
+            BlobContainerConfiguration containerConfig = baseConfiguration with
+            {
+                // This seems to be a bug in StyleCop - it doesn't appear to understand the 'with' syntax.
+#pragma warning disable SA1101 // Prefix local calls with this
+                Container = containerName,
+#pragma warning restore SA1101
+            };
 
             BlobContainerClient container = await this.blobContainerFactory.GetStorageContextAsync(containerConfig)
                 .ConfigureAwait(false);
@@ -56,16 +62,6 @@ namespace Corvus.Storage.Examples.Azure.BlobStorage
             BlockBlobClient dataBlob = container.GetBlockBlobClient(id);
             Response<BlobDownloadResult> data = await dataBlob.DownloadContentAsync().ConfigureAwait(false);
             return data.Value.Content.ToString();
-
-            // TODO: do we also want to consider something like this?
-            // return await this.blobContainerFactory.WithContextAsync(
-            //     containerConfig,
-            //     async container =>
-            //     {
-            //         BlockBlobClient dataBlob = container.GetBlockBlobClient(id);
-            //         Response<BlobDownloadResult> data = await dataBlob.DownloadContentAsync().ConfigureAwait(false);
-            //         return data.Value.Content.ToString();
-            //     });
         }
     }
 }

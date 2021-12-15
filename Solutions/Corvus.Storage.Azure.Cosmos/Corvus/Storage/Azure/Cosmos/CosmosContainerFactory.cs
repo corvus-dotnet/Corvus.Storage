@@ -7,7 +7,6 @@ using Azure.Core;
 using Corvus.Identity.ClientAuthentication.Azure;
 
 using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Corvus.Storage.Azure.Cosmos
 {
@@ -15,49 +14,40 @@ namespace Corvus.Storage.Azure.Cosmos
     /// A factory for a <see cref="Container"/>.
     /// </summary>
     internal class CosmosContainerFactory :
-        TwoLevelCachingStorageContextFactory<CosmosClient, Container, CosmosContainerConfiguration, CosmosClientOptions>,
+        TwoLevelCachingStorageContextFactory<CosmosClient, IAzureTokenCredentialSource?, Container, IAzureTokenCredentialSource?, CosmosContainerConfiguration, CosmosClientOptions>,
         ICosmosContainerSourceFromDynamicConfiguration
     {
-        private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource;
-        private readonly IServiceProvider serviceProvider;
-
         /// <summary>
         /// Creates a <see cref="CosmosContainerFactory"/>.
         /// </summary>
-        /// <param name="azureTokenCredentialSource">
-        /// Provides <see cref="TokenCredential"/>s in exchange for
-        /// <see cref="ClientIdentityConfiguration"/>s.
-        /// </param>
         /// <param name="serviceProvider">
-        /// Provides access to dependencies that are only needed in certain scenarios, and which
-        /// we don't want to cause a DI initialization failure for if they are absent. (We depend
-        /// on <see cref="IServiceIdentityAzureTokenCredentialSource"/>, but only in certain
-        /// scenarios.)
+        /// Required by the base class.
         /// </param>
         public CosmosContainerFactory(
-            IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource,
             IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
-            this.azureTokenCredentialSource = azureTokenCredentialSource;
-            this.serviceProvider = serviceProvider;
         }
 
         /// <inheritdoc/>
-        protected override ValueTask<Container> CreateContextAsync(
-            CosmosClient parent, CosmosContainerConfiguration configuration, CosmosClientOptions? connectionOptions)
+        protected override ValueTask<(Container, IAzureTokenCredentialSource?)> CreateContextAsync(
+            CosmosClient parent,
+            CosmosContainerConfiguration configuration,
+            CosmosClientOptions? connectionOptions,
+            CancellationToken cancellationToken)
         {
             Database db = parent.GetDatabase(configuration.Database);
-            return new ValueTask<Container>(db.GetContainer(configuration.Container));
+            return new ValueTask<(Container, IAzureTokenCredentialSource?)>((db.GetContainer(configuration.Container), null));
         }
 
         /// <inheritdoc/>
-        protected override async ValueTask<CosmosClient> CreateParentContextAsync(
-            CosmosContainerConfiguration configuration, CosmosClientOptions? clientOptions)
+        protected override async ValueTask<(CosmosClient, IAzureTokenCredentialSource?)> CreateParentContextAsync(
+            CosmosContainerConfiguration configuration,
+            CosmosClientOptions? clientOptions,
+            CancellationToken cancellationToken)
         {
-            CosmosClient client = await this.CreateCosmosClientAsync(configuration, clientOptions)
+            return await this.CreateCosmosClientAsync(configuration, clientOptions, cancellationToken)
                 .ConfigureAwait(false);
-
-            return client;
         }
 
         /// <inheritdoc/>
@@ -86,65 +76,60 @@ namespace Corvus.Storage.Azure.Cosmos
             return this.GetCacheKeyForConfiguration(nonContainerSpecificConfiguration);
         }
 
-        private async ValueTask<CosmosClient> CreateCosmosClientAsync(
+        /// <inheritdoc/>
+        protected override async ValueTask InvalidateForConfigurationAsync(
+            CosmosContainerConfiguration contextConfiguration,
+            IAzureTokenCredentialSource? tokenCredentialSource,
+            CosmosClientOptions? connectionOptions,
+            CancellationToken cancellationToken)
+        {
+            if (tokenCredentialSource is not null)
+            {
+                await tokenCredentialSource.GetReplacementForFailedTokenCredentialAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async ValueTask<(CosmosClient, IAzureTokenCredentialSource?)> CreateCosmosClientAsync(
             CosmosContainerConfiguration configuration,
-            CosmosClientOptions? clientOptions)
+            CosmosClientOptions? clientOptions,
+            CancellationToken cancellationToken)
         {
             // TODO: Handle all the options properly. Check for valid combination.
             if (!string.IsNullOrWhiteSpace(configuration.ConnectionStringPlainText))
             {
-                return new CosmosClient(configuration.ConnectionStringPlainText, clientOptions);
+                return (new CosmosClient(configuration.ConnectionStringPlainText, clientOptions), null);
             }
 
             if (configuration.ConnectionStringInKeyVault is not null)
             {
-                string? connectionString = await this.GetKeyVaultSecretFromConfigAsync(configuration.ConnectionStringInKeyVault).ConfigureAwait(false);
+                (string? connectionString, IAzureTokenCredentialSource tokenCredentialSource) = await this.GetKeyVaultSecretFromConfigAsync(
+                    configuration.ConnectionStringInKeyVault,
+                    cancellationToken)
+                    .ConfigureAwait(false);
                 if (connectionString is not null)
                 {
-                    return new CosmosClient(connectionString, clientOptions);
+                    return (new CosmosClient(connectionString, clientOptions), tokenCredentialSource);
                 }
             }
             else if (configuration.AccessKeyInKeyVault is not null && configuration.AccountUri is not null)
             {
-                string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(configuration.AccessKeyInKeyVault).ConfigureAwait(false);
+                (string? accessKey, IAzureTokenCredentialSource tokenCredentialSource) = await this.GetKeyVaultSecretFromConfigAsync(
+                    configuration.AccessKeyInKeyVault,
+                    cancellationToken)
+                    .ConfigureAwait(false);
                 if (accessKey is not null)
                 {
-                    return new CosmosClient(
-                        configuration.AccountUri,
-                        accessKey,
-                        clientOptions);
+                    return (
+                        new CosmosClient(
+                            configuration.AccountUri,
+                            accessKey,
+                            clientOptions),
+                        tokenCredentialSource);
                 }
             }
 
             throw new ArgumentException("Invalid configuration", nameof(configuration));
-        }
-
-        // TODO:
-        //  1: move this into somewhere shared
-        //  2: add some means of triggering a re-read to support key rotation
-        private async Task<string?> GetKeyVaultSecretFromConfigAsync(KeyVaultSecretConfiguration secretConfiguration)
-        {
-            // If no identity for the key vault is specified we use the ambient service
-            // identity. Otherwise, we use the identity configuration supplied.
-            IAzureTokenCredentialSource credentialSource = secretConfiguration.VaultClientIdentity is null
-                ? this.serviceProvider.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>()
-                : await this.azureTokenCredentialSource
-                    .CredentialSourceForConfigurationAsync(secretConfiguration.VaultClientIdentity)
-                    .ConfigureAwait(false);
-            TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync()
-                .ConfigureAwait(false);
-            if (keyVaultCredentials is not null)
-            {
-                string secret = await this.GetKeyVaultSecretAsync(
-                    keyVaultCredentials,
-                    secretConfiguration.VaultName,
-                    secretConfiguration.SecretName)
-                    .ConfigureAwait(false);
-
-                return secret;
-            }
-
-            return null;
         }
     }
 }
