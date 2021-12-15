@@ -58,7 +58,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         }
 
         /// <inheritdoc/>
-        protected override string GetCacheKeyForContext(BlobContainerConfiguration contextConfiguration)
+        protected override string GetCacheKeyForConfiguration(BlobContainerConfiguration contextConfiguration)
         {
             // TODO: there are many options for configuration, and we need to work out a sound way
             // to reduce that reliably to a cache key.

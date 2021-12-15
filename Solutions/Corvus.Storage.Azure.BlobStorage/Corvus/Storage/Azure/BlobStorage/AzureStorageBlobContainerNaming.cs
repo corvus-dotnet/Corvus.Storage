@@ -41,7 +41,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             Span<byte> hashedBytes = stackalloc byte[Sha1Length];
             if (!HashProvider.Value.TryComputeHash(nameUtf8, hashedBytes, out int written) || written != Sha1Length)
             {
-                throw new InvalidOperationException($"Failed to produce hash of expected size");
+                throw new InvalidOperationException("Failed to produce hash of expected size");
             }
 
             return ByteArrayToHexViaLookup32Span(hashedBytes);

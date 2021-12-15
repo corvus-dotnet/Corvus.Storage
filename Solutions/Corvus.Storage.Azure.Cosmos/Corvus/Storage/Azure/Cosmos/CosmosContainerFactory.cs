@@ -61,7 +61,7 @@ namespace Corvus.Storage.Azure.Cosmos
         }
 
         /// <inheritdoc/>
-        protected override string GetCacheKeyForContext(CosmosContainerConfiguration contextConfiguration)
+        protected override string GetCacheKeyForConfiguration(CosmosContainerConfiguration contextConfiguration)
         {
             // TODO: there are many options for configuration, and we need to work out a sound way
             // to reduce that reliably to a cache key.
@@ -71,7 +71,7 @@ namespace Corvus.Storage.Azure.Cosmos
         }
 
         /// <inheritdoc/>
-        protected override string GetCacheKeyForParentContext(CosmosContainerConfiguration contextConfiguration)
+        protected override string GetCacheKeyForParentConfiguration(CosmosContainerConfiguration contextConfiguration)
         {
             CosmosContainerConfiguration nonContainerSpecificConfiguration = contextConfiguration with
             {
@@ -83,7 +83,7 @@ namespace Corvus.Storage.Azure.Cosmos
 #pragma warning restore SA1101 // Prefix local calls with this
             };
 
-            return this.GetCacheKeyForContext(nonContainerSpecificConfiguration);
+            return this.GetCacheKeyForConfiguration(nonContainerSpecificConfiguration);
         }
 
         private async ValueTask<CosmosClient> CreateCosmosClientAsync(
