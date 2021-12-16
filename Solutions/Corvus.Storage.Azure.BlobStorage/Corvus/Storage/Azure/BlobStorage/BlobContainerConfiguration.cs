@@ -10,57 +10,8 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// Encapsulates configuration for a storage account, and optionally a particular container
     /// within that account.
     /// </summary>
-    public class BlobContainerConfiguration
+    public record BlobContainerConfiguration
     {
-        /// <summary>
-        /// Creates a <see cref="BlobContainerConfiguration"/>.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// We define a cloning constructor to make it easy to create new versions of
-        /// configurations that have specific properties changed but which are identical in other
-        /// respects, but this has the side effect of disabling C#'s default constructor
-        /// generation. Nice though it would be to be able to declare one more constructor that
-        /// requires all non-optional properties, Microsoft.Extensions.Configuration can't cope
-        /// with that, so we have to supply a no-args constructor.
-        /// </para>
-        /// </remarks>
-        public BlobContainerConfiguration()
-        {
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="BlobContainerConfiguration"/> with the same settings as an
-        /// existing one.
-        /// </summary>
-        /// <param name="source">The configuration object from which to copy settings.</param>
-        /// <remarks>
-        /// <para>
-        /// This supports scenarios in which applications want to use multiple containers in the
-        /// same storage account, and doesn't want to store multiple configuration entries that
-        /// are all identical except for the <see cref="Container"/> name. Instead, they can create
-        /// a single configuration entry, and then use this to create modified versions with the
-        /// relevant container name plugged in.
-        /// </para>
-        /// <para>
-        /// TODO: is it possible to write this in such a way that it supports the <c>with</c>
-        /// syntax? C# 10 opens that up to a wider range of scenarios, and if there's some
-        /// convention we can follow that means you could just write <c>config with { Container = name }</c>
-        /// that would be great.
-        /// </para>
-        /// </remarks>
-        public BlobContainerConfiguration(
-            BlobContainerConfiguration source)
-        {
-            this.AccountName = source.AccountName;
-            this.AccessKeyPlainText = source.AccessKeyPlainText;
-            this.AccessKeyInKeyVault = source.AccessKeyInKeyVault;
-            this.ConnectionStringPlainText = source.ConnectionStringPlainText;
-            this.ConnectionStringInKeyVault = source.ConnectionStringInKeyVault;
-            this.ClientIdentity = source.ClientIdentity;
-            this.Container = source.Container;
-        }
-
         /// <summary>
         /// Gets or sets the account name.
         /// </summary>
@@ -153,30 +104,5 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// </para>
         /// </remarks>
         public string? Container { get; set; }
-
-        /// <summary>
-        /// Builds a new configuration that has a different <see cref="Container"/>, but which is
-        /// otherwise identical to this one.
-        /// </summary>
-        /// <param name="containerName">
-        /// The value the new configuration's <see cref="Container"/> should have.
-        /// </param>
-        /// <returns>
-        /// A <see cref="BlobContainerConfiguration"/> which is a copy of this one, but for a
-        /// different blob container.
-        /// </returns>
-        /// <remarks>
-        /// <para>
-        /// This enables applications to use multiple containers in the same storage account while
-        /// storing just a single <see cref="BlobContainerConfiguration"/> in configuration.
-        /// </para>
-        /// </remarks>
-        public BlobContainerConfiguration ForContainer(string containerName)
-        {
-            return new BlobContainerConfiguration(this)
-            {
-                Container = containerName,
-            };
-        }
     }
 }

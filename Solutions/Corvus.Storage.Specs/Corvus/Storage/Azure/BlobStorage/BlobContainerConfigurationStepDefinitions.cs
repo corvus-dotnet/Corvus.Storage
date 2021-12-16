@@ -26,11 +26,16 @@ namespace Corvus.Storage.Azure.BlobStorage
         private readonly IBlobContainerSourceFromDynamicConfiguration containerSource;
         private readonly Dictionary<string, BlobContainerConfiguration> configurations = new ();
         private readonly Dictionary<string, BlobContainerClient> containers = new ();
+        private readonly TokenCredentialSourceBindings tokenCredentialSourceBindings;
 
-        public BlobContainerConfigurationStepDefinitions()
+        public BlobContainerConfigurationStepDefinitions(
+            TokenCredentialSourceBindings tokenCredentialSourceBindings)
         {
+            this.tokenCredentialSourceBindings = tokenCredentialSourceBindings;
+
             ServiceCollection services = new ();
             services.AddAzureBlobStorageClientSourceFromDynamicConfiguration();
+            this.tokenCredentialSourceBindings.AddFakeTokenCredentialSource(services);
             this.serviceProvider = services.BuildServiceProvider();
 
             this.containerSource = this.serviceProvider.GetRequiredService<IBlobContainerSourceFromDynamicConfiguration>();
@@ -56,11 +61,20 @@ namespace Corvus.Storage.Azure.BlobStorage
             }
         }
 
+        [Given("I get a blob storage container for '([^']*)' as '([^']*)'")]
         [When("I get a blob storage container for '([^']*)' as '([^']*)'")]
         public async Task WhenIGetABlobStorageContainerForAs(string configName, string containerName)
         {
             BlobContainerConfiguration config = this.configurations[configName];
             BlobContainerClient container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
+            this.containers.Add(containerName, container);
+        }
+
+        [When("I get a replacement for a failed blob storage container for '([^']*)' as '([^']*)'")]
+        public async Task GivenIRecreatedABlobStorageContainerForAsAsync(string configName, string containerName)
+        {
+            BlobContainerConfiguration config = this.configurations[configName];
+            BlobContainerClient container = await this.containerSource.GetReplacementForFailedStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
         }
 
@@ -79,6 +93,36 @@ namespace Corvus.Storage.Azure.BlobStorage
             BlobContainerClient container2 = this.containers[containerName2];
 
             Assert.AreSame(container1, container2);
+        }
+
+        [Then("the BlobContainerClient for containers '([^']*)' and '([^']*)' should be different instances")]
+        public void ThenTheBlobContainerClientForContainersAndShouldBeDifferentInstances(
+            string containerName1, string containerName2)
+        {
+            BlobContainerClient container1 = this.containers[containerName1];
+            BlobContainerClient container2 = this.containers[containerName2];
+
+            Assert.AreNotSame(container1, container2);
+        }
+
+        [Then(@"the BlobContainerConfiguration\.ClientIdentity from '([^']*)' should have been passed to the token credential source")]
+        public void ThenTheBlobContainerConfiguration_ClientIdentityShouldHaveBeenPassedToTheTokenCredentialSource(
+            string configurationName)
+        {
+            Assert.AreEqual(1, this.tokenCredentialSourceBindings.IdentityConfigurations.Count);
+            Assert.AreSame(
+                this.configurations[configurationName].ClientIdentity,
+                this.tokenCredentialSourceBindings.IdentityConfigurations[0]);
+        }
+
+        [Then(@"the BlobContainerConfiguration\.ClientIdentity from '([^']*)' should have been invalidated")]
+        public void ThenTokenCredentialSourceReplacementShouldHaveBeenObtained(
+            string configurationName)
+        {
+            Assert.AreEqual(1, this.tokenCredentialSourceBindings.IdentityConfigurations.Count);
+            Assert.AreSame(
+                this.configurations[configurationName].ClientIdentity,
+                this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations[0]);
         }
     }
 }

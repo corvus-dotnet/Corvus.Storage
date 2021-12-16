@@ -6,6 +6,9 @@
     <TargetFramework>net6.0</TargetFramework>
 
     <Nullable>enable</Nullable>
+
+    <!-- StyleCop is currently choking on record. Disabling AD1000;SA1649 seems to shut it up. -->
+    <NoWarn>AD1000;SA1649</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

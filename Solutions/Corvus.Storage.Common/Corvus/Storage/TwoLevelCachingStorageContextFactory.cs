@@ -2,7 +2,9 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Corvus.Storage
@@ -39,22 +41,35 @@ namespace Corvus.Storage
     /// which those containers belong.
     /// </para>
     /// </remarks>
-    public abstract class TwoLevelCachingStorageContextFactory<TStorageContextParent, TStorageContext, TConfiguration, TConnectionOptions> :
+    internal abstract class TwoLevelCachingStorageContextFactory<TStorageContextParent, TStorageContext, TConfiguration, TConnectionOptions> :
         CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions>
         where TConnectionOptions : class
     {
         private readonly ConcurrentDictionary<string, Task<TStorageContextParent>> parentContexts = new ();
 
+        /// <summary>
+        /// Creates a <see cref="TwoLevelCachingStorageContextFactory{TStorageContextParent, TStorageContext, TConfiguration, TConnectionOptions}"/>.
+        /// </summary>
+        /// <param name="serviceProvider">
+        /// Required by the base class.
+        /// </param>
+        protected TwoLevelCachingStorageContextFactory(IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
+
         /// <inheritdoc/>
         protected override async ValueTask<TStorageContext> CreateContextAsync(
             TConfiguration configuration,
-            TConnectionOptions? connectionOptions)
+            TConnectionOptions? connectionOptions,
+            CancellationToken cancellationToken)
         {
             string parentContextKey = this.GetCacheKeyForParentContext(configuration, connectionOptions);
 
             Task<TStorageContextParent> parentContextTask = this.parentContexts.GetOrAdd(
                 parentContextKey,
-                async _ => await this.CreateParentContextAsync(configuration, connectionOptions).ConfigureAwait(false));
+                async _ => await this.CreateParentContextAsync(configuration, connectionOptions, cancellationToken)
+                    .ConfigureAwait(false));
 
             if (parentContextTask.IsFaulted)
             {
@@ -67,15 +82,17 @@ namespace Corvus.Storage
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
                 // recreation that could happen if multiple threads are trying to rectify the failure simultanously.
-                await Task.Delay(this.Random.Next(150, 250)).ConfigureAwait(false);
+                await Task.Delay(this.Random.Next(150, 250), cancellationToken).ConfigureAwait(false);
 
                 parentContextTask = this.parentContexts.GetOrAdd(
                     parentContextKey,
-                    async _ => await this.CreateParentContextAsync(configuration, connectionOptions).ConfigureAwait(false));
+                    async _ => await this.CreateParentContextAsync(configuration, connectionOptions, cancellationToken)
+                        .ConfigureAwait(false));
             }
 
-            TStorageContextParent parentContext =  await parentContextTask.ConfigureAwait(false);
-            return await this.CreateContextAsync(parentContext, configuration, connectionOptions).ConfigureAwait(false);
+            TStorageContextParent parentContext = await parentContextTask.ConfigureAwait(false);
+            return await this.CreateContextAsync(parentContext, configuration, connectionOptions, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -84,21 +101,29 @@ namespace Corvus.Storage
         /// <param name="parent">The parent in which to create the container.</param>
         /// <param name="configuration">The container configuration.</param>
         /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
+        /// <param name="cancellationToken">
+        /// May enable the operation to be cancelled.
+        /// </param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
         protected abstract ValueTask<TStorageContext> CreateContextAsync(
             TStorageContextParent parent,
             TConfiguration configuration,
-            TConnectionOptions? connectionOptions);
+            TConnectionOptions? connectionOptions,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Create the parent context.
         /// </summary>
         /// <param name="configuration">The container configuration.</param>
         /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
+        /// <param name="cancellationToken">
+        /// May enable the operation to be cancelled.
+        /// </param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
         protected abstract ValueTask<TStorageContextParent> CreateParentContextAsync(
             TConfiguration configuration,
-            TConnectionOptions? connectionOptions);
+            TConnectionOptions? connectionOptions,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Produces a unique cache key based on the combination of a particular storage context

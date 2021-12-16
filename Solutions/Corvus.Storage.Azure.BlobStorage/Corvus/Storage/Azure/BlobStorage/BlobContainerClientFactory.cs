@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Azure.Core;
@@ -10,8 +11,7 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 
 using Corvus.Identity.ClientAuthentication.Azure;
-
-using Microsoft.Extensions.DependencyInjection;
+using Corvus.Storage.Azure.BlobStorage.Internal;
 
 namespace Corvus.Storage.Azure.BlobStorage
 {
@@ -22,8 +22,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>,
         IBlobContainerSourceFromDynamicConfiguration
     {
-        private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource;
-        private readonly IServiceProvider serviceProvider;
+        private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSourceFromConfig;
 
         /// <summary>
         /// Creates a <see cref="BlobContainerClientFactory"/>.
@@ -41,17 +40,22 @@ namespace Corvus.Storage.Azure.BlobStorage
         public BlobContainerClientFactory(
             IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource,
             IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
-            this.azureTokenCredentialSource = azureTokenCredentialSource;
-            this.serviceProvider = serviceProvider;
+            this.azureTokenCredentialSourceFromConfig = azureTokenCredentialSource;
         }
 
         /// <inheritdoc/>
         protected override async ValueTask<BlobContainerClient> CreateContextAsync(
             BlobContainerConfiguration configuration,
-            BlobClientOptions? blobClientOptions)
+            BlobClientOptions? blobClientOptions,
+            CancellationToken cancellationToken)
         {
-            BlobServiceClient blobClient = await this.CreateBlobServiceClientAsync(configuration, blobClientOptions)
+            BlobServiceClient blobClient =
+                await this.CreateBlobServiceClientAsync(
+                    configuration,
+                    blobClientOptions,
+                    cancellationToken)
                 .ConfigureAwait(false);
 
             return blobClient.GetBlobContainerClient(configuration.Container);
@@ -67,67 +71,129 @@ namespace Corvus.Storage.Azure.BlobStorage
             return System.Text.Json.JsonSerializer.Serialize(contextConfiguration);
         }
 
-        private async Task<BlobServiceClient> CreateBlobServiceClientAsync(
+        /// <inheritdoc/>
+        protected override void InvalidateForConfiguration(
+            BlobContainerConfiguration configuration,
+            BlobClientOptions? connectionOptions,
+            CancellationToken cancellationToken)
+        {
+            this.InvalidateCredentials(configuration.ClientIdentity);
+            this.InvalidateCredentials(configuration.ConnectionStringInKeyVault?.VaultClientIdentity);
+            this.InvalidateCredentials(configuration.AccessKeyInKeyVault?.VaultClientIdentity);
+        }
+
+        private static Uri AccountUri(string accountName)
+            => new ($"https://{accountName}.blob.core.windows.net");
+
+        private static ValueTask<BlobServiceClient> ClientFromConnectionStringAsPlainText(
+            BlobContainerConfiguration configuration, BlobClientOptions? blobClientOptions)
+        {
+            return new ValueTask<BlobServiceClient>(
+                new BlobServiceClient(configuration.ConnectionStringPlainText, blobClientOptions));
+        }
+
+        private static ValueTask<BlobServiceClient> AccountNameAndAccessKeyAsPlainText(
             BlobContainerConfiguration configuration,
             BlobClientOptions? blobClientOptions)
         {
-            if (configuration is null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            // TODO: Handle all the options properly. Check for valid combination.
-            if (!string.IsNullOrWhiteSpace(configuration.ConnectionStringPlainText))
-            {
-                return new BlobServiceClient(configuration.ConnectionStringPlainText, blobClientOptions);
-            }
-
-            if (configuration.ConnectionStringInKeyVault is not null)
-            {
-                string? connectionString = await this.GetKeyVaultSecretFromConfigAsync(configuration.ConnectionStringInKeyVault).ConfigureAwait(false);
-                if (connectionString is not null)
-                {
-                    return new BlobServiceClient(connectionString, blobClientOptions);
-                }
-            }
-            else if (configuration.AccessKeyInKeyVault is not null && configuration.AccountName is not null)
-            {
-                string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(configuration.AccessKeyInKeyVault).ConfigureAwait(false);
-                if (accessKey is not null)
-                {
-                    return new BlobServiceClient(
-                        new Uri($"https://{configuration.AccountName}.blob.core.windows.net"),
-                        new StorageSharedKeyCredential(configuration.AccountName, accessKey),
-                        blobClientOptions);
-                }
-            }
-
-            throw new ArgumentException("Invalid configuration", nameof(configuration));
+            return new ValueTask<BlobServiceClient>(
+                new BlobServiceClient(
+                    AccountUri(configuration.AccountName!),
+                    new StorageSharedKeyCredential(configuration.AccountName, configuration.AccessKeyPlainText!),
+                    blobClientOptions));
         }
 
-        private async Task<string?> GetKeyVaultSecretFromConfigAsync(KeyVaultSecretConfiguration secretConfiguration)
+        private async Task<BlobServiceClient> CreateBlobServiceClientAsync(
+            BlobContainerConfiguration configuration,
+            BlobClientOptions? blobClientOptions,
+            CancellationToken cancellationToken)
         {
-            // If no identity for the key vault is specified we use the ambient service
-            // identity. Otherwise, we use the identity configuration supplied.
-            IAzureTokenCredentialSource credentialSource = secretConfiguration.VaultClientIdentity is null
-                ? this.serviceProvider.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>()
-                : await this.azureTokenCredentialSource
-                    .CredentialSourceForConfigurationAsync(secretConfiguration.VaultClientIdentity)
-                    .ConfigureAwait(false);
-            TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync()
-                .ConfigureAwait(false);
-            if (keyVaultCredentials is not null)
+            string? validationMessage = BlobContainerConfigurationValidation.Validate(
+                configuration, out BlobContainerConfigurationTypes configurationType);
+            if (validationMessage is not null)
             {
-                string secret = await this.GetKeyVaultSecretAsync(
-                    keyVaultCredentials,
-                    secretConfiguration.VaultName,
-                    secretConfiguration.SecretName)
-                    .ConfigureAwait(false);
-
-                return secret;
+                throw new ArgumentException(
+                    "Invalid BlobContainerConfiguration: " + validationMessage,
+                    nameof(configuration));
             }
 
-            return null;
+            ValueTask<BlobServiceClient> r = configurationType switch
+            {
+                BlobContainerConfigurationTypes.ConnectionStringAsPlainText =>
+                    ClientFromConnectionStringAsPlainText(configuration, blobClientOptions),
+
+                BlobContainerConfigurationTypes.ConnectionStringInKeyVault =>
+                    this.ClientFromConnectionStringInKeyVault(configuration, blobClientOptions, cancellationToken),
+
+                BlobContainerConfigurationTypes.AccountNameAndAccessKeyAsPlainText =>
+                    AccountNameAndAccessKeyAsPlainText(configuration, blobClientOptions),
+
+                BlobContainerConfigurationTypes.AccountNameAndAccessKeyInKeyVault =>
+                    this.AccountNameAndAccessKeyInKeyVault(
+                        configuration, blobClientOptions, cancellationToken),
+
+                BlobContainerConfigurationTypes.AccountNameAndClientIdentity =>
+                    this.ClientFromAccountNameAndClientIdentity(
+                        configuration, blobClientOptions, cancellationToken),
+
+                _ => throw new InvalidOperationException($"Unknown configuration type {configurationType}"),
+            };
+
+            return await r.ConfigureAwait(false);
+        }
+
+        private async ValueTask<BlobServiceClient> ClientFromConnectionStringInKeyVault(
+            BlobContainerConfiguration configuration,
+            BlobClientOptions? blobClientOptions,
+            CancellationToken cancellationToken)
+        {
+            string? connectionString =
+                await this.GetKeyVaultSecretFromConfigAsync(
+                    configuration.ConnectionStringInKeyVault!,
+                    cancellationToken)
+                    .ConfigureAwait(false);
+            return new BlobServiceClient(
+                    connectionString,
+                    blobClientOptions);
+        }
+
+        private async ValueTask<BlobServiceClient> AccountNameAndAccessKeyInKeyVault(
+            BlobContainerConfiguration configuration,
+            BlobClientOptions? blobClientOptions,
+            CancellationToken cancellationToken)
+        {
+            string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(
+                configuration.AccessKeyInKeyVault!,
+                cancellationToken)
+                .ConfigureAwait(false);
+
+            if (accessKey is null)
+            {
+                throw new InvalidOperationException($"Failed to get secret {configuration.AccessKeyInKeyVault!.SecretName} from {configuration.AccessKeyInKeyVault!.VaultName}");
+            }
+
+            return new BlobServiceClient(
+                AccountUri(configuration.AccountName!),
+                new StorageSharedKeyCredential(configuration.AccountName, accessKey),
+                blobClientOptions);
+        }
+
+        private async ValueTask<BlobServiceClient> ClientFromAccountNameAndClientIdentity(
+            BlobContainerConfiguration configuration,
+            BlobClientOptions? blobClientOptions,
+            CancellationToken cancellationToken)
+        {
+            IAzureTokenCredentialSource credentialSource =
+                await this.azureTokenCredentialSourceFromConfig.CredentialSourceForConfigurationAsync(
+                    configuration.ClientIdentity!,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            TokenCredential tokenCredential = await credentialSource.GetTokenCredentialAsync(cancellationToken)
+                .ConfigureAwait(false);
+            return new BlobServiceClient(
+                AccountUri(configuration.AccountName!),
+                tokenCredential,
+                blobClientOptions);
         }
     }
 }
