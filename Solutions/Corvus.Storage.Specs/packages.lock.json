@@ -149,17 +149,17 @@
       },
       "Corvus.Identity.Abstractions": {
         "type": "Transitive",
-        "resolved": "3.0.0-alpha.9",
-        "contentHash": "oELgTNY72gNDrHyErcBwek5hT01d98Q8BESEaOD+HYKd3poAA9L9fFuC8KGMuUlHFOOIZknZYV5Jg5EHcZiqFg=="
+        "resolved": "3.0.0",
+        "contentHash": "fGYhKMz/n1Ejv77r+0bmzdC9EW3sCfZ3P8dky6rrOEGK4Kijd9yjTwoFEaG9ZHPXu5C7r2O2VqpesgIDkn5iQA=="
       },
       "Corvus.Identity.Azure": {
         "type": "Transitive",
-        "resolved": "3.0.0-alpha.9",
-        "contentHash": "KpRo83ibqhJbtAK6zv4EpEcU7xtuhmHAUHNKBiRtnqy+/4y2DPDm1C9yKMqCNsg+H7EX27esASnADTuvCGY81A==",
+        "resolved": "3.0.0",
+        "contentHash": "TYNTb4CD0pyn9WX4gC8TFGTU0v4inAkVEEG9xCyASgpp0ahMlL8RUfgQAwKZqr6yJ+tHpdjlx02mHJeSWidSiA==",
         "dependencies": {
           "Azure.Identity": "1.5.0",
           "Azure.Security.KeyVault.Secrets": "4.2.0",
-          "Corvus.Identity.Abstractions": "3.0.0-alpha.9",
+          "Corvus.Identity.Abstractions": "3.0.0",
           "Microsoft.Extensions.Caching.Memory": "6.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0"
         }
@@ -1710,7 +1710,7 @@
       "corvus.storage.common": {
         "type": "Project",
         "dependencies": {
-          "Corvus.Identity.Azure": "3.0.0-alpha.9",
+          "Corvus.Identity.Azure": "3.0.0",
           "Microsoft.Extensions.Configuration.Binder": "3.1.0"
         }
       }
