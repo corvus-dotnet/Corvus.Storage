@@ -21,9 +21,9 @@ namespace Corvus.Storage.Azure.BlobStorage
     [Binding]
     public class TokenCredentialSourceBindings
     {
-        public List<ClientIdentityConfiguration> IdentityConfigurations { get; } = new List<ClientIdentityConfiguration>();
+        public List<ClientIdentityConfiguration> IdentityConfigurations { get; } = new ();
 
-        public List<ClientIdentityConfiguration> InvalidatedIdentityConfigurations { get; } = new List<ClientIdentityConfiguration>();
+        public List<ClientIdentityConfiguration> InvalidatedIdentityConfigurations { get; } = new ();
 
         public void AddFakeTokenCredentialSource(IServiceCollection services)
         {
