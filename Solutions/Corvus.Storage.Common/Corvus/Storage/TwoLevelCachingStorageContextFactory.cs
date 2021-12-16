@@ -16,15 +16,9 @@ namespace Corvus.Storage
     /// <typeparam name="TStorageContextParent">
     /// The outer cacheable type. This might typically represent a particular account or server.
     /// </typeparam>
-    /// <typeparam name="TParentContextData">
-    /// Data that the derived type wishes to associate with a cached <typeparamref name="TStorageContextParent"/>.
-    /// </typeparam>
     /// <typeparam name="TStorageContext">
     /// The type of storage context (e.g., a blob container, a CosmosDB collection, or a SQL
     /// database).
-    /// </typeparam>
-    /// <typeparam name="TContextData">
-    /// Data that the derived type wishes to associate with a cached <typeparamref name="TStorageContext"/>.
     /// </typeparam>
     /// <typeparam name="TConfiguration">
     /// The type containing the information identifying a particular physical, tenant-specific
@@ -47,14 +41,14 @@ namespace Corvus.Storage
     /// which those containers belong.
     /// </para>
     /// </remarks>
-    internal abstract class TwoLevelCachingStorageContextFactory<TStorageContextParent, TParentContextData, TStorageContext, TContextData, TConfiguration, TConnectionOptions> :
-        CachingStorageContextFactory<TStorageContext, TContextData, TConfiguration, TConnectionOptions>
+    internal abstract class TwoLevelCachingStorageContextFactory<TStorageContextParent, TStorageContext, TConfiguration, TConnectionOptions> :
+        CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions>
         where TConnectionOptions : class
     {
-        private readonly ConcurrentDictionary<string, Task<(TStorageContextParent, TParentContextData)>> parentContexts = new ();
+        private readonly ConcurrentDictionary<string, Task<TStorageContextParent>> parentContexts = new ();
 
         /// <summary>
-        /// Creates a <see cref="TwoLevelCachingStorageContextFactory{TStorageContextParent, TParentContextData, TStorageContext, TContextData, TConfiguration, TConnectionOptions}"/>.
+        /// Creates a <see cref="TwoLevelCachingStorageContextFactory{TStorageContextParent, TStorageContext, TConfiguration, TConnectionOptions}"/>.
         /// </summary>
         /// <param name="serviceProvider">
         /// Required by the base class.
@@ -65,14 +59,14 @@ namespace Corvus.Storage
         }
 
         /// <inheritdoc/>
-        protected override async ValueTask<(TStorageContext, TContextData)> CreateContextAsync(
+        protected override async ValueTask<TStorageContext> CreateContextAsync(
             TConfiguration configuration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
             string parentContextKey = this.GetCacheKeyForParentContext(configuration, connectionOptions);
 
-            Task<(TStorageContextParent, TParentContextData)> parentContextTask = this.parentContexts.GetOrAdd(
+            Task<TStorageContextParent> parentContextTask = this.parentContexts.GetOrAdd(
                 parentContextKey,
                 async _ => await this.CreateParentContextAsync(configuration, connectionOptions, cancellationToken)
                     .ConfigureAwait(false));
@@ -84,7 +78,7 @@ namespace Corvus.Storage
                 // failed. As such, we will remove the item from the dictionary, and attempt to create a new one to
                 // return. If removing the value fails, that's likely because it's been removed by a different thread,
                 // so we will ignore that and just attempt to create and return a new value anyway.
-                this.parentContexts.TryRemove(parentContextKey, out Task<(TStorageContextParent, TParentContextData)> _);
+                this.parentContexts.TryRemove(parentContextKey, out Task<TStorageContextParent> _);
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
                 // recreation that could happen if multiple threads are trying to rectify the failure simultanously.
@@ -96,7 +90,7 @@ namespace Corvus.Storage
                         .ConfigureAwait(false));
             }
 
-            (TStorageContextParent parentContext, _) = await parentContextTask.ConfigureAwait(false);
+            TStorageContextParent parentContext = await parentContextTask.ConfigureAwait(false);
             return await this.CreateContextAsync(parentContext, configuration, connectionOptions, cancellationToken)
                 .ConfigureAwait(false);
         }
@@ -111,7 +105,7 @@ namespace Corvus.Storage
         /// May enable the operation to be cancelled.
         /// </param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
-        protected abstract ValueTask<(TStorageContext, TContextData)> CreateContextAsync(
+        protected abstract ValueTask<TStorageContext> CreateContextAsync(
             TStorageContextParent parent,
             TConfiguration configuration,
             TConnectionOptions? connectionOptions,
@@ -126,7 +120,7 @@ namespace Corvus.Storage
         /// May enable the operation to be cancelled.
         /// </param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
-        protected abstract ValueTask<(TStorageContextParent, TParentContextData)> CreateParentContextAsync(
+        protected abstract ValueTask<TStorageContextParent> CreateParentContextAsync(
             TConfiguration configuration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken);

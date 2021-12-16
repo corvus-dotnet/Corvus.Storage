@@ -19,7 +19,7 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// A factory for a <see cref="BlobContainerClient"/>.
     /// </summary>
     internal class BlobContainerClientFactory :
-        CachingStorageContextFactory<BlobContainerClient, IAzureTokenCredentialSource?, BlobContainerConfiguration, BlobClientOptions>,
+        CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>,
         IBlobContainerSourceFromDynamicConfiguration
     {
         private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSourceFromConfig;
@@ -46,19 +46,19 @@ namespace Corvus.Storage.Azure.BlobStorage
         }
 
         /// <inheritdoc/>
-        protected override async ValueTask<(BlobContainerClient Context, IAzureTokenCredentialSource? ContextData)> CreateContextAsync(
+        protected override async ValueTask<BlobContainerClient> CreateContextAsync(
             BlobContainerConfiguration configuration,
             BlobClientOptions? blobClientOptions,
             CancellationToken cancellationToken)
         {
-            (BlobServiceClient blobClient, IAzureTokenCredentialSource? tokenSource) =
+            BlobServiceClient blobClient =
                 await this.CreateBlobServiceClientAsync(
                     configuration,
                     blobClientOptions,
                     cancellationToken)
                 .ConfigureAwait(false);
 
-            return (blobClient.GetBlobContainerClient(configuration.Container), tokenSource);
+            return blobClient.GetBlobContainerClient(configuration.Container);
         }
 
         /// <inheritdoc/>
@@ -74,7 +74,6 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// <inheritdoc/>
         protected override void InvalidateForConfiguration(
             BlobContainerConfiguration configuration,
-            IAzureTokenCredentialSource? azureTokenSource,
             BlobClientOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
@@ -86,26 +85,25 @@ namespace Corvus.Storage.Azure.BlobStorage
         private static Uri AccountUri(string accountName)
             => new ($"https://{accountName}.blob.core.windows.net");
 
-        private static ValueTask<(BlobServiceClient Client, IAzureTokenCredentialSource? TokenSource)> ClientFromConnectionStringAsPlainText(
+        private static ValueTask<BlobServiceClient> ClientFromConnectionStringAsPlainText(
             BlobContainerConfiguration configuration, BlobClientOptions? blobClientOptions)
         {
-            return new ValueTask<(BlobServiceClient, IAzureTokenCredentialSource?)>(
-                (new BlobServiceClient(configuration.ConnectionStringPlainText, blobClientOptions), null));
+            return new ValueTask<BlobServiceClient>(
+                new BlobServiceClient(configuration.ConnectionStringPlainText, blobClientOptions));
         }
 
-        private static ValueTask<(BlobServiceClient Client, IAzureTokenCredentialSource? TokenSource)> AccountNameAndAccessKeyAsPlainText(
+        private static ValueTask<BlobServiceClient> AccountNameAndAccessKeyAsPlainText(
             BlobContainerConfiguration configuration,
             BlobClientOptions? blobClientOptions)
         {
-            return new ValueTask<(BlobServiceClient, IAzureTokenCredentialSource?)>(
-                (new BlobServiceClient(
+            return new ValueTask<BlobServiceClient>(
+                new BlobServiceClient(
                     AccountUri(configuration.AccountName!),
                     new StorageSharedKeyCredential(configuration.AccountName, configuration.AccessKeyPlainText!),
-                    blobClientOptions),
-                null));
+                    blobClientOptions));
         }
 
-        private async Task<(BlobServiceClient Client, IAzureTokenCredentialSource? TokenSource)> CreateBlobServiceClientAsync(
+        private async Task<BlobServiceClient> CreateBlobServiceClientAsync(
             BlobContainerConfiguration configuration,
             BlobClientOptions? blobClientOptions,
             CancellationToken cancellationToken)
@@ -119,7 +117,7 @@ namespace Corvus.Storage.Azure.BlobStorage
                     nameof(configuration));
             }
 
-            ValueTask<(BlobServiceClient, IAzureTokenCredentialSource?)> r = configurationType switch
+            ValueTask<BlobServiceClient> r = configurationType switch
             {
                 BlobContainerConfigurationTypes.ConnectionStringAsPlainText =>
                     ClientFromConnectionStringAsPlainText(configuration, blobClientOptions),
@@ -144,29 +142,27 @@ namespace Corvus.Storage.Azure.BlobStorage
             return await r.ConfigureAwait(false);
         }
 
-        private async ValueTask<(BlobServiceClient Client, IAzureTokenCredentialSource? TokenSource)> ClientFromConnectionStringInKeyVault(
+        private async ValueTask<BlobServiceClient> ClientFromConnectionStringInKeyVault(
             BlobContainerConfiguration configuration,
             BlobClientOptions? blobClientOptions,
             CancellationToken cancellationToken)
         {
-            (string? connectionString, IAzureTokenCredentialSource tokenSource) =
+            string? connectionString =
                 await this.GetKeyVaultSecretFromConfigAsync(
                     configuration.ConnectionStringInKeyVault!,
                     cancellationToken)
                     .ConfigureAwait(false);
-            return (
-                new BlobServiceClient(
+            return new BlobServiceClient(
                     connectionString,
-                    blobClientOptions),
-                tokenSource);
+                    blobClientOptions);
         }
 
-        private async ValueTask<(BlobServiceClient Client, IAzureTokenCredentialSource? TokenSource)> AccountNameAndAccessKeyInKeyVault(
+        private async ValueTask<BlobServiceClient> AccountNameAndAccessKeyInKeyVault(
             BlobContainerConfiguration configuration,
             BlobClientOptions? blobClientOptions,
             CancellationToken cancellationToken)
         {
-            (string? accessKey, IAzureTokenCredentialSource tokenSource) = await this.GetKeyVaultSecretFromConfigAsync(
+            string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(
                 configuration.AccessKeyInKeyVault!,
                 cancellationToken)
                 .ConfigureAwait(false);
@@ -176,15 +172,13 @@ namespace Corvus.Storage.Azure.BlobStorage
                 throw new InvalidOperationException($"Failed to get secret {configuration.AccessKeyInKeyVault!.SecretName} from {configuration.AccessKeyInKeyVault!.VaultName}");
             }
 
-            return (
-                new BlobServiceClient(
-                    AccountUri(configuration.AccountName!),
-                    new StorageSharedKeyCredential(configuration.AccountName, accessKey),
-                    blobClientOptions),
-                tokenSource);
+            return new BlobServiceClient(
+                AccountUri(configuration.AccountName!),
+                new StorageSharedKeyCredential(configuration.AccountName, accessKey),
+                blobClientOptions);
         }
 
-        private async ValueTask<(BlobServiceClient Client, IAzureTokenCredentialSource? TokenSource)> ClientFromAccountNameAndClientIdentity(
+        private async ValueTask<BlobServiceClient> ClientFromAccountNameAndClientIdentity(
             BlobContainerConfiguration configuration,
             BlobClientOptions? blobClientOptions,
             CancellationToken cancellationToken)
@@ -196,12 +190,10 @@ namespace Corvus.Storage.Azure.BlobStorage
                 .ConfigureAwait(false);
             TokenCredential tokenCredential = await credentialSource.GetTokenCredentialAsync(cancellationToken)
                 .ConfigureAwait(false);
-            return (
-                new BlobServiceClient(
-                    AccountUri(configuration.AccountName!),
-                    tokenCredential,
-                    blobClientOptions),
-                credentialSource);
+            return new BlobServiceClient(
+                AccountUri(configuration.AccountName!),
+                tokenCredential,
+                blobClientOptions);
         }
     }
 }

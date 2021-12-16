@@ -25,9 +25,6 @@ namespace Corvus.Storage
     /// The type of storage context (e.g., a blob container, a CosmosDB collection, or a SQL
     /// database).
     /// </typeparam>
-    /// <typeparam name="TContextData">
-    /// Data that the derived type wishes to associate with a cached <typeparamref name="TStorageContext"/>.
-    /// </typeparam>
     /// <typeparam name="TConfiguration">
     /// The type containing the information identifying a particular physical, tenant-specific
     /// instance of a context.
@@ -36,18 +33,18 @@ namespace Corvus.Storage
     /// The type containing information describing the particular connection requirements (e.g.,
     /// retry settings, pipeline configuration).
     /// </typeparam>
-    internal abstract class CachingStorageContextFactory<TStorageContext, TContextData, TConfiguration, TConnectionOptions> :
+    internal abstract class CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions> :
         IStorageContextSourceFromDynamicConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
         where TConnectionOptions : class
     {
-        private readonly ConcurrentDictionary<string, Task<(TStorageContext, TContextData)>> contexts = new ();
+        private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
         private readonly List<(WeakReference<TConnectionOptions> Options, string Id)> trackedConnections = new ();
         private readonly IServiceProvider serviceProvider;
         private IAzureTokenCredentialSourceFromDynamicConfiguration? azureTokenCredentialSourceFromConfig;
         private int nextConnectionsOptionsId = 1;
 
         /// <summary>
-        /// Creates a <see cref="CachingStorageContextFactory{TStorageContext, TContextData, TConfiguration, TConnectionOptions}"/>.
+        /// Creates a <see cref="CachingStorageContextFactory{TStorageContext, TConfiguration, TConnectionOptions}"/>.
         /// </summary>
         /// <param name="serviceProvider">
         /// Provides access to dependencies that are only needed in certain scenarios, and which
@@ -84,7 +81,7 @@ namespace Corvus.Storage
 
             // TODO: what about contexts that need a rental modal because they don't support
             // concurrent use?
-            Task<(TStorageContext, TContextData)> result = this.contexts.GetOrAdd(
+            Task<TStorageContext> result = this.contexts.GetOrAdd(
                 key,
                 async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions, cancellationToken).ConfigureAwait(false));
 
@@ -95,7 +92,7 @@ namespace Corvus.Storage
                 // failed. As such, we will remove the item from the dictionary, and attempt to create a new one to
                 // return. If removing the value fails, that's likely because it's been removed by a different thread,
                 // so we will ignore that and just attempt to create and return a new value anyway.
-                this.contexts.TryRemove(key, out Task<(TStorageContext, TContextData)> _);
+                this.contexts.TryRemove(key, out Task<TStorageContext> _);
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
                 // recreation that could happen if multiple threads are trying to rectify the failure simultanously.
@@ -106,7 +103,7 @@ namespace Corvus.Storage
                     async _ => await this.CreateContextAsync(contextConfiguration, connectionOptions, cancellationToken).ConfigureAwait(false));
             }
 
-            (TStorageContext context, _) = await result.ConfigureAwait(false);
+            TStorageContext context = await result.ConfigureAwait(false);
             return context;
         }
 
@@ -117,11 +114,9 @@ namespace Corvus.Storage
             CancellationToken cancellationToken)
         {
             string key = this.GetCacheKeyForContext(contextConfiguration, connectionOptions);
-            if (this.contexts.TryRemove(key, out Task<(TStorageContext, TContextData)>? cacheEntry))
+            if (this.contexts.TryRemove(key, out Task<TStorageContext>? _))
             {
-                (_, TContextData contextData) = await cacheEntry.ConfigureAwait(false);
-
-                this.InvalidateForConfiguration(contextConfiguration, contextData, connectionOptions, cancellationToken);
+                this.InvalidateForConfiguration(contextConfiguration, connectionOptions, cancellationToken);
             }
 
             return await this.GetStorageContextAsync(
@@ -140,7 +135,7 @@ namespace Corvus.Storage
         /// May enable the operation to be cancelled.
         /// </param>
         /// <returns>A <see cref="ValueTask"/> the produces the instance of the context.</returns>
-        protected abstract ValueTask<(TStorageContext Context, TContextData ContextData)> CreateContextAsync(
+        protected abstract ValueTask<TStorageContext> CreateContextAsync(
             TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken);
@@ -244,16 +239,12 @@ namespace Corvus.Storage
         /// <param name="contextConfiguration">
         /// Configuration describing the storage context.
         /// </param>
-        /// <param name="data">
-        /// The additional data stored in the cache for this entry.
-        /// </param>
         /// <param name="connectionOptions">Connection options (e.g., retry settings).</param>
         /// <param name="cancellationToken">
         /// May enable the operation to be cancelled.
         /// </param>
         protected abstract void InvalidateForConfiguration(
             TConfiguration contextConfiguration,
-            TContextData data,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken);
 
@@ -269,7 +260,7 @@ namespace Corvus.Storage
         /// <returns>
         /// A task producing the secret, or null of no secret was found.
         /// </returns>
-        protected async ValueTask<(string?, IAzureTokenCredentialSource)> GetKeyVaultSecretFromConfigAsync(
+        protected async ValueTask<string?> GetKeyVaultSecretFromConfigAsync(
             KeyVaultSecretConfiguration secretConfiguration,
             CancellationToken cancellationToken)
         {
@@ -291,12 +282,11 @@ namespace Corvus.Storage
                     secretConfiguration.SecretName,
                     cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
-                string secret = accountKeyResponse.Value.Value;
 
-                return (secret, credentialSource);
+                return accountKeyResponse.Value.Value;
             }
 
-            return (null, credentialSource);
+            return null;
         }
 
         /// <summary>
