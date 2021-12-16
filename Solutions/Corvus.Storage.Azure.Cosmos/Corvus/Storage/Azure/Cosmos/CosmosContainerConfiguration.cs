@@ -91,6 +91,20 @@ public record CosmosContainerConfiguration
     public KeyVaultSecretConfiguration? ConnectionStringInKeyVault { get; set; }
 
     /// <summary>
+    /// Gets or sets the configuration describing the Azure AD client identity to use when
+    /// connecting to Cosmos DB.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If this is set, you should set <see cref="AccountUri"/>, and you should not use a
+    /// connection string (because the Microsoft.Azure.Cosmos client library does not support the
+    /// use of connection strings in conjunction with Azure AD authentication, or at least, not as
+    /// of v3.23).
+    /// </para>
+    /// </remarks>
+    public ClientIdentityConfiguration? ClientIdentity { get; set; }
+
+    /// <summary>
     /// Gets or sets the container name.
     /// </summary>
     /// <remarks>

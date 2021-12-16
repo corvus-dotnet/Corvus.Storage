@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 using Azure.Storage.Blobs;
 
+using Corvus.Storage.Azure.BlobStorage.Internal;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +29,9 @@ namespace Corvus.Storage.Azure.BlobStorage
         private readonly Dictionary<string, BlobContainerConfiguration> configurations = new ();
         private readonly Dictionary<string, BlobContainerClient> containers = new ();
         private readonly TokenCredentialSourceBindings tokenCredentialSourceBindings;
+
+        private string? validationMessage;
+        private BlobContainerConfigurationTypes validatedType;
 
         public BlobContainerConfigurationStepDefinitions(
             TokenCredentialSourceBindings tokenCredentialSourceBindings)
@@ -70,12 +75,34 @@ namespace Corvus.Storage.Azure.BlobStorage
             this.containers.Add(containerName, container);
         }
 
+        [When("I validate blob storage configuration '([^']*)'")]
+        public void WhenIValidateBlobStorageConfiguration(string configName)
+        {
+            BlobContainerConfiguration config = this.configurations[configName];
+            this.validationMessage = BlobContainerConfigurationValidation.Validate(
+                config,
+                out this.validatedType);
+        }
+
         [When("I get a replacement for a failed blob storage container for '([^']*)' as '([^']*)'")]
         public async Task GivenIRecreatedABlobStorageContainerForAsAsync(string configName, string containerName)
         {
             BlobContainerConfiguration config = this.configurations[configName];
             BlobContainerClient container = await this.containerSource.GetReplacementForFailedStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
+        }
+
+        [Then("blob storage configuration validation succeeds")]
+        public void ThenValidationSucceeds()
+        {
+            Assert.IsNull(this.validationMessage);
+        }
+
+        [Then("validation determines that the blob storage configuration type is '([^']*)'")]
+        public void ThenValidationDeterminesThatTheBlobStorageConfigurationTypeIs(
+            string type)
+        {
+            Assert.AreEqual(Enum.Parse<BlobContainerConfigurationTypes>(type), this.validatedType);
         }
 
         [Then("the storage client endpoint in '([^']*)' should be '([^']*)'")]

@@ -59,4 +59,9 @@
     <ProjectReference Include="..\Corvus.Storage.Azure.Cosmos\Corvus.Storage.Azure.Cosmos.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Corvus\Storage\Azure\BlobStorage\ConfigurationValidation\" />
+    <Folder Include="Corvus\Storage\Azure\Cosmos\ConfigurationValidation\" />
+  </ItemGroup>
+
 </Project>

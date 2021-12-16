@@ -63,7 +63,13 @@ namespace Corvus.Storage
         /// </summary>
         internal Random Random { get; } = new ();
 
-        private IAzureTokenCredentialSourceFromDynamicConfiguration AzureTokenCredentialSourceFromConfig
+        /// <summary>
+        /// Gets an <see cref="IAzureTokenCredentialSourceFromDynamicConfiguration"/> from DI.
+        /// (This retrieves this on demand, so if DI has not been configured so as to supply
+        /// this, it will fail on first use of this property, rather than at the point where DI
+        /// constructs us.)
+        /// </summary>
+        protected IAzureTokenCredentialSourceFromDynamicConfiguration AzureTokenCredentialSourceFromConfig
             => this.azureTokenCredentialSourceFromConfig ??= this.serviceProvider.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>();
 
         /// <inheritdoc/>

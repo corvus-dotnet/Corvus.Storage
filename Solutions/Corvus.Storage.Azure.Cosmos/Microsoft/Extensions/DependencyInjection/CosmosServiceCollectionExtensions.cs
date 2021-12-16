@@ -3,6 +3,7 @@
 // </copyright>
 
 using Corvus.Storage.Azure.Cosmos;
+using Corvus.Storage.Azure.Cosmos.Internal;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
