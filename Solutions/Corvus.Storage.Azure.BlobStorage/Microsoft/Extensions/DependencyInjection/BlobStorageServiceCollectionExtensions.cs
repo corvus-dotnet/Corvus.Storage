@@ -3,6 +3,7 @@
 // </copyright>
 
 using Corvus.Storage.Azure.BlobStorage;
+using Corvus.Storage.Azure.BlobStorage.Internal;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

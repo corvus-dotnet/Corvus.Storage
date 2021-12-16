@@ -8,6 +8,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
+using Corvus.Storage.Azure.Cosmos.Internal;
+
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,9 @@ namespace Corvus.Storage.Azure.Cosmos
         private readonly ICosmosContainerSourceFromDynamicConfiguration containerSource;
         private readonly Dictionary<string, CosmosContainerConfiguration> configurations = new ();
         private readonly Dictionary<string, Container> containers = new ();
+
+        private string? validationMessage;
+        private CosmosContainerConfigurationTypes validatedType;
 
         public CosmosContainerConfigurationStepDefinitions()
         {
@@ -61,6 +66,28 @@ namespace Corvus.Storage.Azure.Cosmos
             CosmosContainerConfiguration config = this.configurations[configName];
             Container container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
+        }
+
+        [When("I validate Cosmos DB storage configuration '([^']*)'")]
+        public void WhenIValidateBlobStorageConfiguration(string configName)
+        {
+            CosmosContainerConfiguration config = this.configurations[configName];
+            this.validationMessage = CosmosContainerConfigurationValidation.Validate(
+                config,
+                out this.validatedType);
+        }
+
+        [Then("Cosmos DB storage configuration validation succeeds")]
+        public void ThenValidationSucceeds()
+        {
+            Assert.IsNull(this.validationMessage);
+        }
+
+        [Then("validation determines that the Cosmos DB storage configuration type is '([^']*)'")]
+        public void ThenValidationDeterminesThatTheBlobStorageConfigurationTypeIs(
+            string type)
+        {
+            Assert.AreEqual(Enum.Parse<CosmosContainerConfigurationTypes>(type), this.validatedType);
         }
 
         [Then(@"the CosmosClient\.Endpoint in '([^']*)' should be '([^']*)'")]

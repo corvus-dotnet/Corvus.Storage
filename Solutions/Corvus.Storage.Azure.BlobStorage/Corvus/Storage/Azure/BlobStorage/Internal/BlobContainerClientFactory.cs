@@ -11,9 +11,8 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 
 using Corvus.Identity.ClientAuthentication.Azure;
-using Corvus.Storage.Azure.BlobStorage.Internal;
 
-namespace Corvus.Storage.Azure.BlobStorage
+namespace Corvus.Storage.Azure.BlobStorage.Internal
 {
     /// <summary>
     /// A factory for a <see cref="BlobContainerClient"/>.
@@ -22,15 +21,9 @@ namespace Corvus.Storage.Azure.BlobStorage
         CachingStorageContextFactory<BlobContainerClient, BlobContainerConfiguration, BlobClientOptions>,
         IBlobContainerSourceFromDynamicConfiguration
     {
-        private readonly IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSourceFromConfig;
-
         /// <summary>
         /// Creates a <see cref="BlobContainerClientFactory"/>.
         /// </summary>
-        /// <param name="azureTokenCredentialSource">
-        /// Provides <see cref="TokenCredential"/>s in exchange for
-        /// <see cref="ClientIdentityConfiguration"/>s.
-        /// </param>
         /// <param name="serviceProvider">
         /// Provides access to dependencies that are only needed in certain scenarios, and which
         /// we don't want to cause a DI initialization failure for if they are absent. (We depend
@@ -38,11 +31,9 @@ namespace Corvus.Storage.Azure.BlobStorage
         /// scenarios.)
         /// </param>
         public BlobContainerClientFactory(
-            IAzureTokenCredentialSourceFromDynamicConfiguration azureTokenCredentialSource,
             IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            this.azureTokenCredentialSourceFromConfig = azureTokenCredentialSource;
         }
 
         /// <inheritdoc/>
@@ -184,7 +175,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             CancellationToken cancellationToken)
         {
             IAzureTokenCredentialSource credentialSource =
-                await this.azureTokenCredentialSourceFromConfig.CredentialSourceForConfigurationAsync(
+                await this.AzureTokenCredentialSourceFromConfig.CredentialSourceForConfigurationAsync(
                     configuration.ClientIdentity!,
                     cancellationToken)
                 .ConfigureAwait(false);
