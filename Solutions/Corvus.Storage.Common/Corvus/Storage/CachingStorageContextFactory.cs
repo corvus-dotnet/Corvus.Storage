@@ -121,9 +121,7 @@ namespace Corvus.Storage
             {
                 (_, TContextData contextData) = await cacheEntry.ConfigureAwait(false);
 
-                await this.InvalidateForConfigurationAsync(
-                    contextConfiguration, contextData, connectionOptions, cancellationToken)
-                    .ConfigureAwait(false);
+                this.InvalidateForConfiguration(contextConfiguration, contextData, connectionOptions, cancellationToken);
             }
 
             return await this.GetStorageContextAsync(
@@ -253,8 +251,7 @@ namespace Corvus.Storage
         /// <param name="cancellationToken">
         /// May enable the operation to be cancelled.
         /// </param>
-        /// <returns>A <see cref="ValueTask"/> that completes when invalidation is complete.</returns>
-        protected abstract ValueTask InvalidateForConfigurationAsync(
+        protected abstract void InvalidateForConfiguration(
             TConfiguration contextConfiguration,
             TContextData data,
             TConnectionOptions? connectionOptions,
@@ -300,6 +297,22 @@ namespace Corvus.Storage
             }
 
             return (null, credentialSource);
+        }
+
+        /// <summary>
+        /// Invalidates any credentials that may be cached for a particular identity.
+        /// </summary>
+        /// <param name="clientIdentity">
+        /// The configuration describing the identity for which cached credentials are suspected to
+        /// be out of date. Accepts nulls to save the need for callers to check for null. (This does
+        /// nothing if this argument is null.)
+        /// </param>
+        protected void InvalidateCredentials(ClientIdentityConfiguration? clientIdentity)
+        {
+            if (clientIdentity is not null)
+            {
+                this.AzureTokenCredentialSourceFromConfig.InvalidateFailedAccessToken(clientIdentity);
+            }
         }
     }
 }

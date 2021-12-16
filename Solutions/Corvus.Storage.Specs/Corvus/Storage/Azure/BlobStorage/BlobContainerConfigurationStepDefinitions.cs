@@ -115,14 +115,14 @@ namespace Corvus.Storage.Azure.BlobStorage
                 this.tokenCredentialSourceBindings.IdentityConfigurations[0]);
         }
 
-        [Then(@"the TokenCredentialSource obtained with the BlobContainerConfiguration\.ClientIdentity from '([^']*)' should have been asked for a replacement TokenCredential")]
+        [Then(@"the BlobContainerConfiguration\.ClientIdentity from '([^']*)' should have been invalidated")]
         public void ThenTokenCredentialSourceReplacementShouldHaveBeenObtained(
             string configurationName)
         {
             Assert.AreEqual(1, this.tokenCredentialSourceBindings.IdentityConfigurations.Count);
             Assert.AreSame(
                 this.configurations[configurationName].ClientIdentity,
-                this.tokenCredentialSourceBindings.ReplacementIdentityConfigurations[0]);
+                this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations[0]);
         }
     }
 }

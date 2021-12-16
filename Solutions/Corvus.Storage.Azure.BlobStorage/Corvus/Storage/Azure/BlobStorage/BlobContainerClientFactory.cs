@@ -72,17 +72,15 @@ namespace Corvus.Storage.Azure.BlobStorage
         }
 
         /// <inheritdoc/>
-        protected override async ValueTask InvalidateForConfigurationAsync(
+        protected override void InvalidateForConfiguration(
             BlobContainerConfiguration configuration,
             IAzureTokenCredentialSource? azureTokenSource,
             BlobClientOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
-            if (azureTokenSource is not null)
-            {
-                await azureTokenSource.GetReplacementForFailedTokenCredentialAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            }
+            this.InvalidateCredentials(configuration.ClientIdentity);
+            this.InvalidateCredentials(configuration.ConnectionStringInKeyVault?.VaultClientIdentity);
+            this.InvalidateCredentials(configuration.AccessKeyInKeyVault?.VaultClientIdentity);
         }
 
         private static Uri AccountUri(string accountName)

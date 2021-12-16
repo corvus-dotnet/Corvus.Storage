@@ -77,17 +77,14 @@ namespace Corvus.Storage.Azure.Cosmos
         }
 
         /// <inheritdoc/>
-        protected override async ValueTask InvalidateForConfigurationAsync(
+        protected override void InvalidateForConfiguration(
             CosmosContainerConfiguration contextConfiguration,
             IAzureTokenCredentialSource? tokenCredentialSource,
             CosmosClientOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
-            if (tokenCredentialSource is not null)
-            {
-                await tokenCredentialSource.GetReplacementForFailedTokenCredentialAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            }
+            this.InvalidateCredentials(contextConfiguration.ConnectionStringInKeyVault?.VaultClientIdentity);
+            this.InvalidateCredentials(contextConfiguration.AccessKeyInKeyVault?.VaultClientIdentity);
         }
 
         private async ValueTask<(CosmosClient, IAzureTokenCredentialSource?)> CreateCosmosClientAsync(

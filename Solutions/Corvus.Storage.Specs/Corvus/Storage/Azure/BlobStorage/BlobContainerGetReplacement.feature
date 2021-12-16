@@ -39,5 +39,5 @@ Scenario: Recreate connection with client identity
     When I get a replacement for a failed blob storage container for 'config' as 'c2'
     Then the storage client endpoint in 'c1' should be 'https://myaccount.blob.core.windows.net/MyContainer'
     And the BlobContainerClient for containers 'c1' and 'c2' should be different instances
-    And the TokenCredentialSource obtained with the BlobContainerConfiguration.ClientIdentity from 'config' should have been asked for a replacement TokenCredential
+    And the BlobContainerConfiguration.ClientIdentity from 'config' should have been invalidated
     # Would like to test that the TokenCredential returned by the token credential source was used, but there isn't a straightforward way to do that.

@@ -23,7 +23,7 @@ namespace Corvus.Storage.Azure.BlobStorage
     {
         public List<ClientIdentityConfiguration> IdentityConfigurations { get; } = new List<ClientIdentityConfiguration>();
 
-        public List<ClientIdentityConfiguration> ReplacementIdentityConfigurations { get; } = new List<ClientIdentityConfiguration>();
+        public List<ClientIdentityConfiguration> InvalidatedIdentityConfigurations { get; } = new List<ClientIdentityConfiguration>();
 
         public void AddFakeTokenCredentialSource(IServiceCollection services)
         {
@@ -50,19 +50,20 @@ namespace Corvus.Storage.Azure.BlobStorage
                 CancellationToken cancellationToken = default)
             {
                 this.parent.IdentityConfigurations.Add(configuration);
-                return new ValueTask<IAzureTokenCredentialSource>(new Source(configuration, this.parent));
+                return new ValueTask<IAzureTokenCredentialSource>(new Source(configuration));
+            }
+
+            public void InvalidateFailedAccessToken(ClientIdentityConfiguration configuration)
+            {
+                this.parent.InvalidatedIdentityConfigurations.Add(configuration);
             }
 
             private class Source : IAzureTokenCredentialSource
             {
-                private readonly TokenCredentialSourceBindings parent;
-
                 public Source(
-                    ClientIdentityConfiguration configuration,
-                    TokenCredentialSourceBindings parent)
+                    ClientIdentityConfiguration configuration)
                 {
                     this.Configuration = configuration;
-                    this.parent = parent;
                 }
 
                 public ClientIdentityConfiguration Configuration { get; }
@@ -75,8 +76,9 @@ namespace Corvus.Storage.Azure.BlobStorage
 
                 public ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(CancellationToken cancellationToken = default)
                 {
-                    this.parent.ReplacementIdentityConfigurations.Add(this.Configuration);
-                    return this.GetTokenCredentialAsync(cancellationToken);
+                    // This method is not called in this test, because the caching contexts invalidate at the
+                    // sourcefromconfig level.
+                    throw new NotSupportedException();
                 }
 
                 public ValueTask<TokenCredential> GetTokenCredentialAsync(CancellationToken cancellationToken = default)
