@@ -57,6 +57,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Storage.Azure.BlobStorage\Corvus.Storage.Azure.BlobStorage.csproj" />
     <ProjectReference Include="..\Corvus.Storage.Azure.Cosmos\Corvus.Storage.Azure.Cosmos.csproj" />
+    <ProjectReference Include="..\Corvus.Storage.Sql\Corvus.Storage.Sql.csproj" />
   </ItemGroup>
 
   <ItemGroup>
