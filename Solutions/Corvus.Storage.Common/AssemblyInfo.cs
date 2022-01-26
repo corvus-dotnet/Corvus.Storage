@@ -6,3 +6,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Corvus.Storage.Azure.BlobStorage")]
 [assembly: InternalsVisibleTo("Corvus.Storage.Azure.Cosmos")]
+[assembly: InternalsVisibleTo("Corvus.Storage.Sql")]

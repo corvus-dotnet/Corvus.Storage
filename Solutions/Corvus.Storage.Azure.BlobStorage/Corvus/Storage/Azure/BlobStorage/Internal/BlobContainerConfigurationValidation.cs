@@ -8,12 +8,12 @@ using System.Linq;
 namespace Corvus.Storage.Azure.BlobStorage.Internal;
 
 /// <summary>
-/// Checks <see cref="BlobContainerConfigurationValidation"/> instances for validity.
+/// Checks <see cref="BlobContainerConfiguration"/> instances for validity.
 /// </summary>
 internal static class BlobContainerConfigurationValidation
 {
     /// <summary>
-    /// Checks a <see cref="BlobContainerConfigurationValidation"/> for validity.
+    /// Checks a <see cref="BlobContainerConfiguration"/> for validity.
     /// </summary>
     /// <param name="configuration">
     /// The configuration to check.
@@ -30,12 +30,12 @@ internal static class BlobContainerConfigurationValidation
     {
         type = default;
 
-        HashSet<BlobContainerConfigurationTypes> indicatedConfigTypes = new ();
-
         if (configuration is null)
         {
             return "must not be null";
         }
+
+        HashSet<BlobContainerConfigurationTypes> indicatedConfigTypes = new ();
 
         bool accountNamePresent = !string.IsNullOrWhiteSpace(configuration.AccountName);
         bool accessKeyPlainTextPresent = !string.IsNullOrWhiteSpace(configuration.AccessKeyPlainText);
