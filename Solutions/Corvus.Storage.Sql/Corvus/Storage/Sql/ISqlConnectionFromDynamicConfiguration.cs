@@ -2,7 +2,7 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace Corvus.Storage.Sql;
 

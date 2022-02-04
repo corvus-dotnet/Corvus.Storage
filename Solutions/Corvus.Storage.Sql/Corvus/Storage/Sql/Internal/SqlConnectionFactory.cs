@@ -2,14 +2,13 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-using System.Data.SqlClient;
-
 using Azure;
 using Azure.Core;
 using Azure.Security.KeyVault.Secrets;
 
 using Corvus.Identity.ClientAuthentication.Azure;
 
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corvus.Storage.Sql.Internal;

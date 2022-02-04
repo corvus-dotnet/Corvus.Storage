@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using System.Threading.Tasks;
 using Corvus.Identity.ClientAuthentication.Azure;
 using Corvus.Storage.Sql.Internal;
 
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
