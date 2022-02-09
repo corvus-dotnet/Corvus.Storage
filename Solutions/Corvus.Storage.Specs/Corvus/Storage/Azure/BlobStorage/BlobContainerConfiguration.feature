@@ -1,5 +1,5 @@
 ﻿Feature: BlobContainerConfiguration
-    As the person responsible for deploying and configuring an application that use Azure Blob Storage
+    As the person responsible for deploying and configuring an application that uses Azure Blob Storage
     I need to be able to supply the necessary details and credentials in various different ways
     So that I can connect to the correct storage account while meeting the security requirements of my application
 

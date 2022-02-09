@@ -69,7 +69,7 @@ internal static class CosmosContainerConfigurationValidation
         switch (indicatedConfigTypes.Count)
         {
             case 0:
-                return "unable to determine blob configuration type because no suitable properties have been set";
+                return "unable to determine Cosmos container configuration type because no suitable properties have been set";
 
             case 1:
                 type = indicatedConfigTypes.Single();

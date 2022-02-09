@@ -48,7 +48,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Corvus.Testing.SpecFlow.NUnit" Version="1.4.7" />
+    <PackageReference Include="Corvus.Testing.SpecFlow.NUnit" Version="1.4.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="[6.0.*,)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[6.0.*,)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.0.*,)" />
@@ -57,6 +57,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Storage.Azure.BlobStorage\Corvus.Storage.Azure.BlobStorage.csproj" />
     <ProjectReference Include="..\Corvus.Storage.Azure.Cosmos\Corvus.Storage.Azure.Cosmos.csproj" />
+    <ProjectReference Include="..\Corvus.Storage.Sql\Corvus.Storage.Sql.csproj" />
   </ItemGroup>
 
   <ItemGroup>
