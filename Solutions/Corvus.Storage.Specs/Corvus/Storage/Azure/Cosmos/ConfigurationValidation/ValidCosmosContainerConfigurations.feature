@@ -1,5 +1,5 @@
 ﻿Feature: ValidCosmosContainerConfigurations
-	As the person responsible for deploying and configuring an application that use Azure Cosmos DB
+	As the person responsible for deploying and configuring an application that uses Azure Cosmos DB
     I need to be able to supply the necessary details and credentials in various different ways
     So that I can connect to the correct storage account while meeting the security requirements of my application
 

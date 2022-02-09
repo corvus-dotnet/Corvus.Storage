@@ -1,5 +1,5 @@
 ﻿Feature: SqlDatabaseConfigurations
-    As the person responsible for deploying and configuring an application that use Azure SQL or SQL Server
+    As the person responsible for deploying and configuring an application that uses Azure SQL or SQL Server
     I need to be able to supply the necessary details and credentials in various different ways
     So that I can connect to the correct database while meeting the security requirements of my application
 

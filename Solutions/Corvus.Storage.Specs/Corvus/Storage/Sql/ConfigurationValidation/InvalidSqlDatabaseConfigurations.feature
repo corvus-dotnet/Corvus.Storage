@@ -1,5 +1,5 @@
 ﻿Feature: InvalidSqlDatabaseConfigurations
-    As the person responsible for deploying and configuring an application that use SQL Server or Azure SQL databases
+    As the person responsible for deploying and configuring an application that uses SQL Server or Azure SQL databases
     I need to configuration that supplies the necessary details and credentials in various different ways to be accepted as valid
     So that I can connect to the correct storage account while meeting the security requirements of my application
 
