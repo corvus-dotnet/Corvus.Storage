@@ -40,8 +40,7 @@ internal class SqlConnectionFactory :
     /// constructs us.)
     /// </summary>
     /// <remarks>
-    /// TODO: duped from CachingStorageContextFactory. Factor out, and also consider a caching
-    /// key vault client.
+    /// Consider a caching key vault client as per https://github.com/corvus-dotnet/Corvus.Storage/issues/27.
     /// </remarks>
     private IAzureTokenCredentialSourceFromDynamicConfiguration AzureTokenCredentialSourceFromConfig
         => this.azureTokenCredentialSourceFromConfig ??= this.serviceProvider.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>();
@@ -81,13 +80,10 @@ internal class SqlConnectionFactory :
         object? connectionOptions,
         CancellationToken cancellationToken = default)
     {
-        // TODO: refactor? Duped from CachingStorageContextFactory
         if (configuration.ConnectionStringInKeyVault?.VaultClientIdentity is not null)
         {
             this.AzureTokenCredentialSourceFromConfig.InvalidateFailedAccessToken(configuration.ConnectionStringInKeyVault.VaultClientIdentity);
         }
-
-        //// TODO: invalidation for SQL client ID when we support it.
 
         return await this.GetStorageContextAsync(
             configuration, connectionOptions, cancellationToken)
@@ -119,7 +115,7 @@ internal class SqlConnectionFactory :
     }
 
     // TODO: refactor out of CachingStorageContextFactory so we can use this even in providers
-    // like this that don't want the context caching.
+    // like this that don't want the context caching. See https://github.com/corvus-dotnet/Corvus.Storage/issues/27.
     private async ValueTask<string?> GetKeyVaultSecretFromConfigAsync(
         KeyVaultSecretConfiguration secretConfiguration,
         CancellationToken cancellationToken)
