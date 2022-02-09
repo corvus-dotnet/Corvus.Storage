@@ -32,7 +32,7 @@ internal static class SqlDatabaseConfigurationValidation
             return "must not be null";
         }
 
-        HashSet<SqlDatabaseConfigurationTypes> indicatedConfigTypes = new ();
+        HashSet<SqlDatabaseConfigurationTypes> indicatedConfigTypes = new();
 
         bool connectionStringPlainTextPresent = !string.IsNullOrWhiteSpace(configuration.ConnectionStringPlainText);
         bool connectionStringInKeyVaultPresent = configuration.ConnectionStringInKeyVault is not null;

@@ -65,12 +65,7 @@ namespace Corvus.Storage.Azure.Cosmos.Internal
         {
             CosmosContainerConfiguration nonContainerSpecificConfiguration = contextConfiguration with
             {
-                // StyleCop thinks this is a local call. It's probably because it doesn't
-                // understand with 'with' syntax. We should be able to remove this at
-                // some point, because StyleCop shouldn't be fazed by this.
-#pragma warning disable SA1101 // Prefix local calls with this
                 Container = null,
-#pragma warning restore SA1101 // Prefix local calls with this
             };
 
             return this.GetCacheKeyForConfiguration(nonContainerSpecificConfiguration);

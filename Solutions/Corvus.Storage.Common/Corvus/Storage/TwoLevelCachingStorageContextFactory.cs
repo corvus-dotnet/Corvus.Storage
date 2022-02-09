@@ -45,7 +45,7 @@ namespace Corvus.Storage
         CachingStorageContextFactory<TStorageContext, TConfiguration, TConnectionOptions>
         where TConnectionOptions : class
     {
-        private readonly ConcurrentDictionary<string, Task<TStorageContextParent>> parentContexts = new ();
+        private readonly ConcurrentDictionary<string, Task<TStorageContextParent>> parentContexts = new();
 
         /// <summary>
         /// Creates a <see cref="TwoLevelCachingStorageContextFactory{TStorageContextParent, TStorageContext, TConfiguration, TConnectionOptions}"/>.

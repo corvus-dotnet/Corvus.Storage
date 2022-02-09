@@ -24,9 +24,9 @@ namespace Corvus.Storage.Sql
     [Binding]
     public class SqlDatabaseConfigurationStepDefinitions
     {
-        private readonly Dictionary<string, SqlDatabaseConfiguration> configurations = new ();
-        private readonly SqlDatabaseConfiguration configuration = new ();
-        private readonly Dictionary<string, SqlConnection> connections = new ();
+        private readonly Dictionary<string, SqlDatabaseConfiguration> configurations = new();
+        private readonly SqlDatabaseConfiguration configuration = new();
+        private readonly Dictionary<string, SqlConnection> connections = new();
         private readonly ServiceProvider serviceProvider;
         private readonly ISqlConnectionFromDynamicConfiguration containerSource;
 
@@ -35,7 +35,7 @@ namespace Corvus.Storage.Sql
 
         public SqlDatabaseConfigurationStepDefinitions()
         {
-            ServiceCollection services = new ();
+            ServiceCollection services = new();
             services.AddSqlConnectionFromDynamicConfiguration();
             this.serviceProvider = services.BuildServiceProvider();
 
@@ -51,7 +51,7 @@ namespace Corvus.Storage.Sql
         [Given("SqlDatabaseConfiguration of")]
         public void GivenCosmosContainerConfigurationOf(string configText)
         {
-            ConfigurationBuilder cb = new ();
+            ConfigurationBuilder cb = new();
             cb.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configText)));
             IConfiguration configuration = cb.Build();
 
@@ -81,7 +81,7 @@ namespace Corvus.Storage.Sql
         public void GivenSqlDatabaseConfiguration_ConnectionStringInKeyVaultSetToUseVaultAndSecret(
             string vaultName, string secretName)
         {
-            this.configuration.ConnectionStringInKeyVault = new ()
+            this.configuration.ConnectionStringInKeyVault = new()
             {
                 VaultName = vaultName,
                 SecretName = secretName,

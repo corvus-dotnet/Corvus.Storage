@@ -32,7 +32,7 @@ internal static class CosmosContainerConfigurationValidation
             return "must not be null";
         }
 
-        HashSet<CosmosContainerConfigurationTypes> indicatedConfigTypes = new ();
+        HashSet<CosmosContainerConfigurationTypes> indicatedConfigTypes = new();
 
         bool accountUriPresent = !string.IsNullOrWhiteSpace(configuration.AccountUri);
         bool databasePresent = !string.IsNullOrWhiteSpace(configuration.Database);

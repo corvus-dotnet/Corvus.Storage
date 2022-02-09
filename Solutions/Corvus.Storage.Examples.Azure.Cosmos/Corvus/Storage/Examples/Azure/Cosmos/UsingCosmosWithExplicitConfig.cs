@@ -49,10 +49,7 @@ public class UsingCosmosWithExplicitConfig
     {
         CosmosContainerConfiguration containerConfig = baseConfiguration with
         {
-            // This seems to be a bug in StyleCop - it doesn't appear to understand the 'with' syntax.
-#pragma warning disable SA1101 // Prefix local calls with this
             Container = containerName,
-#pragma warning restore SA1101 // Prefix local calls with this
         };
 
         Container container = await this.cosmosContainerFactory.GetStorageContextAsync(containerConfig)

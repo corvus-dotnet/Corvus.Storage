@@ -74,7 +74,7 @@ namespace Corvus.Storage.Azure.BlobStorage.Internal
         }
 
         private static Uri AccountUri(string accountName)
-            => new ($"https://{accountName}.blob.core.windows.net");
+            => new($"https://{accountName}.blob.core.windows.net");
 
         private static ValueTask<BlobServiceClient> ClientFromConnectionStringAsPlainText(
             BlobContainerConfiguration configuration, BlobClientOptions? blobClientOptions)
