@@ -11,7 +11,6 @@ namespace Corvus.Storage.Sql
     /// </summary>
     public record SqlDatabaseConfiguration
     {
-
         /// <summary>
         /// Gets or sets the connection string with which to connect.
         /// </summary>

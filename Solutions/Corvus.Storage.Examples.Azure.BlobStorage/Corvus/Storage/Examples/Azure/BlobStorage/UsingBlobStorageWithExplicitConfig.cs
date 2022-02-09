@@ -50,10 +50,7 @@ namespace Corvus.Storage.Examples.Azure.BlobStorage
         {
             BlobContainerConfiguration containerConfig = baseConfiguration with
             {
-                // This seems to be a bug in StyleCop - it doesn't appear to understand the 'with' syntax.
-#pragma warning disable SA1101 // Prefix local calls with this
                 Container = containerName,
-#pragma warning restore SA1101
             };
 
             BlobContainerClient container = await this.blobContainerFactory.GetStorageContextAsync(containerConfig)

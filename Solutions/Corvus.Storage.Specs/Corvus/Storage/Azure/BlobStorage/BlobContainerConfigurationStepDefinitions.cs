@@ -26,8 +26,8 @@ namespace Corvus.Storage.Azure.BlobStorage
     {
         private readonly ServiceProvider serviceProvider;
         private readonly IBlobContainerSourceFromDynamicConfiguration containerSource;
-        private readonly Dictionary<string, BlobContainerConfiguration> configurations = new ();
-        private readonly Dictionary<string, BlobContainerClient> containers = new ();
+        private readonly Dictionary<string, BlobContainerConfiguration> configurations = new();
+        private readonly Dictionary<string, BlobContainerClient> containers = new();
         private readonly TokenCredentialSourceBindings tokenCredentialSourceBindings;
 
         private string? validationMessage;
@@ -38,7 +38,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         {
             this.tokenCredentialSourceBindings = tokenCredentialSourceBindings;
 
-            ServiceCollection services = new ();
+            ServiceCollection services = new();
             services.AddAzureBlobStorageClientSourceFromDynamicConfiguration();
             this.tokenCredentialSourceBindings.AddFakeTokenCredentialSource(services);
             this.serviceProvider = services.BuildServiceProvider();
@@ -54,7 +54,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         [Given("BlobContainerConfiguration configuration of")]
         public void GivenBlobContainerConfigurationConfigurationOf(string configText)
         {
-            ConfigurationBuilder cb = new ();
+            ConfigurationBuilder cb = new();
             cb.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configText)));
             IConfiguration configuration = cb.Build();
 

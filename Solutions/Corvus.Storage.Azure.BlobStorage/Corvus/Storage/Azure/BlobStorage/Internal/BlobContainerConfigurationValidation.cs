@@ -35,7 +35,7 @@ internal static class BlobContainerConfigurationValidation
             return "must not be null";
         }
 
-        HashSet<BlobContainerConfigurationTypes> indicatedConfigTypes = new ();
+        HashSet<BlobContainerConfigurationTypes> indicatedConfigTypes = new();
 
         bool accountNamePresent = !string.IsNullOrWhiteSpace(configuration.AccountName);
         bool accessKeyPlainTextPresent = !string.IsNullOrWhiteSpace(configuration.AccessKeyPlainText);

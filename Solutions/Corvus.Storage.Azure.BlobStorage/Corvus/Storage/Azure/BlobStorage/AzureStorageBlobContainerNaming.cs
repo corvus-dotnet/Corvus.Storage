@@ -20,7 +20,7 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// </remarks>
     public static class AzureStorageBlobContainerNaming
     {
-        private static readonly Lazy<SHA1> HashProvider = new (() => SHA1.Create());
+        private static readonly Lazy<SHA1> HashProvider = new(() => SHA1.Create());
         private static readonly uint[] Lookup32 = CreateLookup32();
 
         /// <summary>

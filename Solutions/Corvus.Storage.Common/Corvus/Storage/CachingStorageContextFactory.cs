@@ -37,8 +37,8 @@ namespace Corvus.Storage
         IStorageContextSourceFromDynamicConfiguration<TStorageContext, TConfiguration, TConnectionOptions>
         where TConnectionOptions : class
     {
-        private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new ();
-        private readonly List<(WeakReference<TConnectionOptions> Options, string Id)> trackedConnections = new ();
+        private readonly ConcurrentDictionary<string, Task<TStorageContext>> contexts = new();
+        private readonly List<(WeakReference<TConnectionOptions> Options, string Id)> trackedConnections = new();
         private readonly IServiceProvider serviceProvider;
         private IAzureTokenCredentialSourceFromDynamicConfiguration? azureTokenCredentialSourceFromConfig;
         private int nextConnectionsOptionsId = 1;
@@ -61,7 +61,7 @@ namespace Corvus.Storage
         /// <summary>
         /// Gets a random number generated used for picking a delay time before retrying something.
         /// </summary>
-        internal Random Random { get; } = new ();
+        internal Random Random { get; } = new();
 
         /// <summary>
         /// Gets an <see cref="IAzureTokenCredentialSourceFromDynamicConfiguration"/> from DI.

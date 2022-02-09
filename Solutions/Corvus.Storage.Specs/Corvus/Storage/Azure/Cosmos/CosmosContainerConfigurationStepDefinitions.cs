@@ -25,15 +25,15 @@ namespace Corvus.Storage.Azure.Cosmos
     {
         private readonly ServiceProvider serviceProvider;
         private readonly ICosmosContainerSourceFromDynamicConfiguration containerSource;
-        private readonly Dictionary<string, CosmosContainerConfiguration> configurations = new ();
-        private readonly Dictionary<string, Container> containers = new ();
+        private readonly Dictionary<string, CosmosContainerConfiguration> configurations = new();
+        private readonly Dictionary<string, Container> containers = new();
 
         private string? validationMessage;
         private CosmosContainerConfigurationTypes validatedType;
 
         public CosmosContainerConfigurationStepDefinitions()
         {
-            ServiceCollection services = new ();
+            ServiceCollection services = new();
             services.AddCosmosContainerSourceFromDynamicConfiguration();
             this.serviceProvider = services.BuildServiceProvider();
 
@@ -48,7 +48,7 @@ namespace Corvus.Storage.Azure.Cosmos
         [Given("CosmosContainerConfiguration of")]
         public void GivenCosmosContainerConfigurationOf(string configText)
         {
-            ConfigurationBuilder cb = new ();
+            ConfigurationBuilder cb = new();
             cb.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configText)));
             IConfiguration configuration = cb.Build();
 
