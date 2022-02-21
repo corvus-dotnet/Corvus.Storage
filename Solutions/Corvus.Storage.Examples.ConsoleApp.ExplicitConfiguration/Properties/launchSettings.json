@@ -10,7 +10,7 @@
     },
     "Blob ConnectionStringKeyVault": {
       "commandName": "Project",
-      "commandLineArgs": "cosmos connection-string-key-vault"
+      "commandLineArgs": "blob connection-string-key-vault"
     },
     "Blob AccessKeyKeyVault": {
       "commandName": "Project",
@@ -27,6 +27,18 @@
     "Cosmos AccessKeyKeyVault": {
       "commandName": "Project",
       "commandLineArgs": "cosmos access-key-key-vault"
+    },
+    "Table ConnectionStringPlainText": {
+      "commandName": "Project",
+      "commandLineArgs": "table connection-string-plain-text"
+    },
+    "Table ConnectionStringKeyVault": {
+      "commandName": "Project",
+      "commandLineArgs": "table connection-string-key-vault"
+    },
+    "Table AccessKeyKeyVault": {
+      "commandName": "Project",
+      "commandLineArgs": "table access-key-key-vault"
     }
   }
 }

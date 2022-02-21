@@ -87,16 +87,25 @@
       },
       "Azure.Core": {
         "type": "Transitive",
-        "resolved": "1.20.0",
-        "contentHash": "q7xigZIBjLjSKJA/Y+VygmJ2iZGiEyNuicN5iRX9oJL7451SulZm/CQ7qd8YCeL5TgNCNYCIrTIqRaams95zHA==",
+        "resolved": "1.22.0",
+        "contentHash": "ze/xRCHSSDe5TIk5vBDbVrauW1EN7UIbnBvIBfMH8KSt/I9+/7yPAjTBDgNBk0IwG6WBV+BBHp4IUtS/PGAQwQ==",
         "dependencies": {
-          "Microsoft.Bcl.AsyncInterfaces": "1.0.0",
+          "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
           "System.Diagnostics.DiagnosticSource": "4.6.0",
           "System.Memory.Data": "1.0.2",
           "System.Numerics.Vectors": "4.5.0",
           "System.Text.Encodings.Web": "4.7.2",
-          "System.Text.Json": "4.6.0",
+          "System.Text.Json": "4.7.2",
           "System.Threading.Tasks.Extensions": "4.5.4"
+        }
+      },
+      "Azure.Data.Tables": {
+        "type": "Transitive",
+        "resolved": "12.4.0",
+        "contentHash": "xzGwkZ1s9qM77uoNZWneeJIG0q+fMceRi3qGjZaiBGF9mrORL4+TnW59JiOozOZqAOdpUpt9ELKGWTRqOVKxgA==",
+        "dependencies": {
+          "Azure.Core": "1.22.0",
+          "System.Text.Json": "4.7.2"
         }
       },
       "Azure.Identity": {
@@ -187,8 +196,8 @@
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
-        "resolved": "1.0.0",
-        "contentHash": "K63Y4hORbBcKLWH5wnKgzyn7TOfYzevIEwIedQHBIkmkEBA9SCqgvom+XTuE+fAFGvINGkhFItaZ2dvMGdT5iw=="
+        "resolved": "1.1.1",
+        "contentHash": "yuvf07qFWFqtK3P/MRkEKLhn5r2UbSpVueRziSqj0yJQIKFwG1pq9mOayK3zE5qZCTs0CbrwL9M6R8VwqyGy2w=="
       },
       "Microsoft.Bcl.HashCode": {
         "type": "Transitive",
@@ -1617,6 +1626,13 @@
           "Microsoft.Azure.Cosmos": "3.24.0"
         }
       },
+      "corvus.storage.azure.tablestorage": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Data.Tables": "12.4.0",
+          "Corvus.Storage.Common": "1.0.0"
+        }
+      },
       "corvus.storage.common": {
         "type": "Project",
         "dependencies": {
@@ -1634,6 +1650,12 @@
         "type": "Project",
         "dependencies": {
           "Corvus.Storage.Azure.Cosmos": "1.0.0"
+        }
+      },
+      "corvus.storage.examples.azure.tables": {
+        "type": "Project",
+        "dependencies": {
+          "Corvus.Storage.Azure.TableStorage": "1.0.0"
         }
       }
     }

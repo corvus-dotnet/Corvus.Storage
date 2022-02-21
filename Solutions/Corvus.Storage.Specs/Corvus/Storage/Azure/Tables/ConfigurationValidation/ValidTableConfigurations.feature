@@ -1,28 +1,28 @@
-﻿Feature: ValidBlobContainerConfigurations
-    As the person responsible for deploying and configuring an application that uses Azure Blob Storage
+﻿Feature: ValidTableConfigurations
+    As the person responsible for deploying and configuring an application that uses Azure Table Storage
     I need to be able to supply the necessary details and credentials in various different ways
     So that I can connect to the correct storage account while meeting the security requirements of my application
 
 Scenario: Connection string as plain text
-    Given BlobContainerConfiguration configuration of
+    Given TableConfiguration configuration of
         """
         {
           "config": {
-            "Container": "MyContainer",
+            "TableName": "MyTable",
             "ConnectionStringPlainText": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
           }
         }
         """
-    When I validate blob storage configuration 'config'
-    Then blob storage configuration validation succeeds
-    And validation determines that the blob storage configuration type is 'ConnectionStringAsPlainText'
+    When I validate table configuration 'config'
+    Then table configuration validation succeeds
+    And validation determines that the table configuration type is 'ConnectionStringAsPlainText'
 
 Scenario: Connection string in key vault
-    Given BlobContainerConfiguration configuration of
+    Given TableConfiguration configuration of
         """
         {
           "config": {
-            "Container": "MyContainer",
+            "TableName": "MyTable",
             "ConnectionStringInKeyVault": {
               "VaultName": "myvault",
               "SecretName": "secret"
@@ -30,31 +30,31 @@ Scenario: Connection string in key vault
           }
         }
         """
-    When I validate blob storage configuration 'config'
-    Then blob storage configuration validation succeeds
-    And validation determines that the blob storage configuration type is 'ConnectionStringInKeyVault'
+    When I validate table configuration 'config'
+    Then table configuration validation succeeds
+    And validation determines that the table configuration type is 'ConnectionStringInKeyVault'
 
 Scenario: Account with access key as plain text
-    Given BlobContainerConfiguration configuration of
+    Given TableConfiguration configuration of
         """
         {
           "config": {
-            "Container": "MyContainer",
+            "TableName": "MyTable",
             "AccountName": "myaccount",
             "AccessKeyPlainText": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
           }
         }
         """
-    When I validate blob storage configuration 'config'
-    Then blob storage configuration validation succeeds
-    And validation determines that the blob storage configuration type is 'AccountNameAndAccessKeyAsPlainText'
+    When I validate table configuration 'config'
+    Then table configuration validation succeeds
+    And validation determines that the table configuration type is 'AccountNameAndAccessKeyAsPlainText'
 
 Scenario: Account with access key in key vault
-    Given BlobContainerConfiguration configuration of
+    Given TableConfiguration configuration of
         """
         {
           "config": {
-            "Container": "MyContainer",
+            "TableName": "MyTable",
             "AccountName": "myaccount",
             "AccessKeyInKeyVault": {
               "VaultName": "myvault",
@@ -63,16 +63,16 @@ Scenario: Account with access key in key vault
           }
         }
         """
-    When I validate blob storage configuration 'config'
-    Then blob storage configuration validation succeeds
-    And validation determines that the blob storage configuration type is 'AccountNameAndAccessKeyInKeyVault'
+    When I validate table configuration 'config'
+    Then table configuration validation succeeds
+    And validation determines that the table configuration type is 'AccountNameAndAccessKeyInKeyVault'
 
 Scenario: Account with client identity
-    Given BlobContainerConfiguration configuration of
+    Given TableConfiguration configuration of
         """
         {
           "config": {
-            "Container": "MyContainer",
+            "TableName": "MyTable",
             "AccountName": "myaccount",
             "ClientIdentity": {
               "IdentitySourceType": "Managed"
@@ -80,6 +80,6 @@ Scenario: Account with client identity
           }
         }
         """
-    When I validate blob storage configuration 'config'
-    Then blob storage configuration validation succeeds
-    And validation determines that the blob storage configuration type is 'AccountNameAndClientIdentity'
+    When I validate table configuration 'config'
+    Then table configuration validation succeeds
+    And validation determines that the table configuration type is 'AccountNameAndClientIdentity'

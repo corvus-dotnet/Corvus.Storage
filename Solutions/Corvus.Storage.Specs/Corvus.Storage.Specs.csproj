@@ -57,12 +57,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Storage.Azure.BlobStorage\Corvus.Storage.Azure.BlobStorage.csproj" />
     <ProjectReference Include="..\Corvus.Storage.Azure.Cosmos\Corvus.Storage.Azure.Cosmos.csproj" />
+    <ProjectReference Include="..\Corvus.Storage.Azure.TableStorage\Corvus.Storage.Azure.TableStorage.csproj" />
     <ProjectReference Include="..\Corvus.Storage.Sql\Corvus.Storage.Sql.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Corvus\Storage\Azure\BlobStorage\ConfigurationValidation\" />
-    <Folder Include="Corvus\Storage\Azure\Cosmos\ConfigurationValidation\" />
   </ItemGroup>
 
 </Project>

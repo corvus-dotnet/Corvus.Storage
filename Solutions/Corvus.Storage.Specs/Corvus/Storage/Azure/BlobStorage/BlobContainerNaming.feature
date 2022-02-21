@@ -10,7 +10,7 @@
 
 # In Corvus tenancy, the root tenant id is f26450ab1668784bb327951c8b08f347. The logical container
 # name used by Marain.Tenancy for each per-tenant container is 'corvustenancy', making the tenanted
-# name 'f26450ab1668784bb327951c8b08f347-corvustenancy'. The hashed version of this name, the name
+# name 'f26450ab1668784bb327951c8b08f347-corvustenancy'. The hashed version of this name is the name
 # of the container in which any Marain.Tenancy installation stores children of the root tenant,
 # is 'cce7b3deef3998aad88f5f0116f922a94e7cb6c4'.
 Scenario: Well known root tenant container name becomes well known root container name

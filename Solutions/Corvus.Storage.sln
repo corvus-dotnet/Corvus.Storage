@@ -31,7 +31,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Examples.Azu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Benchmarks", "Corvus.Storage.Benchmarks\Corvus.Storage.Benchmarks.csproj", "{F8813A3D-EE26-4843-850A-955534EB9FC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Storage.Sql", "Corvus.Storage.Sql\Corvus.Storage.Sql.csproj", "{BCF0FCCC-EFB6-4250-B18A-8DD4454076C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Sql", "Corvus.Storage.Sql\Corvus.Storage.Sql.csproj", "{BCF0FCCC-EFB6-4250-B18A-8DD4454076C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Azure.TableStorage", "Corvus.Storage.Azure.TableStorage\Corvus.Storage.Azure.TableStorage.csproj", "{7C3A1ABF-38D8-4D93-B6F8-88870FB0C4E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Storage.Examples.Azure.Tables", "Corvus.Storage.Examples.Azure.Tables\Corvus.Storage.Examples.Azure.Tables.csproj", "{1BC6F485-E048-492F-8113-E1FCDC3B9FD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +79,14 @@ Global
 		{BCF0FCCC-EFB6-4250-B18A-8DD4454076C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCF0FCCC-EFB6-4250-B18A-8DD4454076C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCF0FCCC-EFB6-4250-B18A-8DD4454076C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C3A1ABF-38D8-4D93-B6F8-88870FB0C4E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C3A1ABF-38D8-4D93-B6F8-88870FB0C4E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C3A1ABF-38D8-4D93-B6F8-88870FB0C4E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C3A1ABF-38D8-4D93-B6F8-88870FB0C4E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BC6F485-E048-492F-8113-E1FCDC3B9FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BC6F485-E048-492F-8113-E1FCDC3B9FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BC6F485-E048-492F-8113-E1FCDC3B9FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BC6F485-E048-492F-8113-E1FCDC3B9FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +95,7 @@ Global
 		{D52EF382-D71B-419C-B1F7-0783B00A3955} = {95491911-89D1-4E14-8EAC-E78BB17FF47E}
 		{5FB84ED0-F8B1-458A-9A00-D0358028748E} = {95491911-89D1-4E14-8EAC-E78BB17FF47E}
 		{2FD1E6B1-5712-4010-AF6D-A1078847C099} = {95491911-89D1-4E14-8EAC-E78BB17FF47E}
+		{1BC6F485-E048-492F-8113-E1FCDC3B9FD9} = {95491911-89D1-4E14-8EAC-E78BB17FF47E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11FBB969-AF38-4D8A-9CD7-6B935150F47F}

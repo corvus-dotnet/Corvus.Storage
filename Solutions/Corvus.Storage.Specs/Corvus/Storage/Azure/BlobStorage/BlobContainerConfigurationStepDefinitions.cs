@@ -105,7 +105,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             Assert.AreEqual(Enum.Parse<BlobContainerConfigurationTypes>(type), this.validatedType);
         }
 
-        [Then("the storage client endpoint in '([^']*)' should be '([^']*)'")]
+        [Then("the storage client endpoint in BlobContainerClient '([^']*)' should be '([^']*)'")]
         public void ThenTheStorageClientEndpointInShouldBe(string containerName, string expectedEndpoint)
         {
             BlobContainerClient container = this.containers[containerName];
@@ -146,7 +146,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         public void ThenTokenCredentialSourceReplacementShouldHaveBeenObtained(
             string configurationName)
         {
-            Assert.AreEqual(1, this.tokenCredentialSourceBindings.IdentityConfigurations.Count);
+            Assert.AreEqual(1, this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations.Count);
             Assert.AreSame(
                 this.configurations[configurationName].ClientIdentity,
                 this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations[0]);

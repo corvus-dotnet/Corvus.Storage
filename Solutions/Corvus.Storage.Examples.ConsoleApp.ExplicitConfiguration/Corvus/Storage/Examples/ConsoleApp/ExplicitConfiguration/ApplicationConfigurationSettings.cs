@@ -29,5 +29,10 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
         /// service identity.
         /// </summary>
         public ClientIdentityConfiguration ServiceIdentity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration settings for table storage.
+        /// </summary>
+        public TableStorageConfigurationSettings TableStorage { get; set; }
     }
 }
