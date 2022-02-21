@@ -15,8 +15,8 @@ Scenario: Recreate connection with connection string
         """
     And I get a blob storage container for 'config' as 'c1'
     When I get a replacement for a failed blob storage container for 'config' as 'c2'
-    Then the storage client endpoint in 'c1' should be 'http://127.0.0.1:10000/devstoreaccount1/MyContainer'
-    And the storage client endpoint in 'c2' should be 'http://127.0.0.1:10000/devstoreaccount1/MyContainer'
+    Then the storage client endpoint in BlobContainerClient 'c1' should be 'http://127.0.0.1:10000/devstoreaccount1/MyContainer'
+    And the storage client endpoint in BlobContainerClient 'c2' should be 'http://127.0.0.1:10000/devstoreaccount1/MyContainer'
     # Would like to test that the AccountKey is also present, but there isn't a straightforward way to do that.
     And the BlobContainerClient for containers 'c1' and 'c2' should be different instances
 
@@ -37,7 +37,7 @@ Scenario: Recreate connection with client identity
     And I get a blob storage container for 'config' as 'c1'
     And I reset the fake token credential source
     When I get a replacement for a failed blob storage container for 'config' as 'c2'
-    Then the storage client endpoint in 'c1' should be 'https://myaccount.blob.core.windows.net/MyContainer'
+    Then the storage client endpoint in BlobContainerClient 'c1' should be 'https://myaccount.blob.core.windows.net/MyContainer'
     And the BlobContainerClient for containers 'c1' and 'c2' should be different instances
     And the BlobContainerConfiguration.ClientIdentity from 'config' should have been invalidated
     # Would like to test that the TokenCredential returned by the token credential source was used, but there isn't a straightforward way to do that.
