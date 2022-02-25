@@ -15,8 +15,8 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// There are various restrictions on entity names in Azure storage. For example, a blob container name can start
     /// with a letter or a number, but a table name has to start with a letter. Both blob container and table names
     /// can be a maximum of 63 characters long, and so on. As a result, it's desirable to have a mechanism for taking
-    /// an "ideal world" table name and converting it into a name that's guaranteed to be safe to use. This class
-    /// provides helper methods to do that.
+    /// an "ideal world" container name and converting it into a name that's guaranteed to be safe to use. This class
+    /// provides a helper method to do that.
     /// </remarks>
     public static class AzureStorageBlobContainerNaming
     {
