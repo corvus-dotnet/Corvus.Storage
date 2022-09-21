@@ -75,6 +75,12 @@ public abstract class UseTableWithAppConfigurationBase : Command
         /// </remarks>
         public abstract Task<int> InvokeAsync(InvocationContext context);
 
+        /// <inheritdoc/>
+        public int Invoke(InvocationContext context)
+        {
+            throw new System.NotImplementedException("Synchronous invocation not supported");
+        }
+
         /// <summary>
         /// To be called by derived types' overrides of <see cref="InvokeAsync(InvocationContext)"/>.
         /// </summary>
