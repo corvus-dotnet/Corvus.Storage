@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{53ACB9
 		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		..\Documentation\ReleaseNotes\Corvus.Storage.v1.md = ..\Documentation\ReleaseNotes\Corvus.Storage.v1.md
 		..\GitVersion.yml = ..\GitVersion.yml
 		stylecop.json = stylecop.json
 		StyleCop.ruleset = StyleCop.ruleset
@@ -35,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Sql", "Corvu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Azure.TableStorage", "Corvus.Storage.Azure.TableStorage\Corvus.Storage.Azure.TableStorage.csproj", "{7C3A1ABF-38D8-4D93-B6F8-88870FB0C4E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Storage.Examples.Azure.Tables", "Corvus.Storage.Examples.Azure.Tables\Corvus.Storage.Examples.Azure.Tables.csproj", "{1BC6F485-E048-492F-8113-E1FCDC3B9FD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Storage.Examples.Azure.Tables", "Corvus.Storage.Examples.Azure.Tables\Corvus.Storage.Examples.Azure.Tables.csproj", "{1BC6F485-E048-492F-8113-E1FCDC3B9FD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
