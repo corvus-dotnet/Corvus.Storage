@@ -50,21 +50,6 @@
           "Microsoft.Extensions.Options": "6.0.0"
         }
       },
-      "Roslynator.Analyzers": {
-        "type": "Direct",
-        "requested": "[4.1.1, )",
-        "resolved": "4.1.1",
-        "contentHash": "3cPVlrB1PytlO1ztZZBOExDKQWpMZgI15ZDa0BqLu0l6xv+xIRfEpqjNRcpvUy3aLxWTkPgSKZbbaO+VoFEJ1g=="
-      },
-      "StyleCop.Analyzers": {
-        "type": "Direct",
-        "requested": "[1.2.0-beta.435, )",
-        "resolved": "1.2.0-beta.435",
-        "contentHash": "TADk7vdGXtfTnYCV7GyleaaRTQjfoSfZXprQrVMm7cSJtJbFc1QIbWPyLvrgrfGdfHbGmUPvaN4ODKNxg2jgPQ==",
-        "dependencies": {
-          "StyleCop.Analyzers.Unstable": "1.2.0.435"
-        }
-      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta4.22272.1, )",
@@ -700,11 +685,6 @@
         "type": "Transitive",
         "resolved": "4.3.0",
         "contentHash": "VB5cn/7OzUfzdnC8tqAIMQciVLiq2epm2NrAm1E9OjNRyG4lVhfR61SMcLizejzQP8R8Uf/0l5qOIbUEi+RdEg=="
-      },
-      "StyleCop.Analyzers.Unstable": {
-        "type": "Transitive",
-        "resolved": "1.2.0.435",
-        "contentHash": "ouwPWZxbOV3SmCZxIRqHvljkSzkCyi1tDoMzQtDb/bRP8ctASV/iRJr+A2Gdj0QLaLmWnqTWDrH82/iP+X80Lg=="
       },
       "System.AppContext": {
         "type": "Transitive",
@@ -1652,47 +1632,47 @@
       "corvus.storage.azure.blobstorage": {
         "type": "Project",
         "dependencies": {
-          "Azure.Storage.Blobs": "[12.13.1, )",
-          "Corvus.Storage.Common": "[1.0.0, )"
+          "Azure.Storage.Blobs": "12.13.1",
+          "Corvus.Storage.Common": "1.0.0"
         }
       },
       "corvus.storage.azure.cosmos": {
         "type": "Project",
         "dependencies": {
-          "Corvus.Storage.Common": "[1.0.0, )",
-          "Microsoft.Azure.Cosmos": "[3.30.1, )"
+          "Corvus.Storage.Common": "1.0.0",
+          "Microsoft.Azure.Cosmos": "3.30.1"
         }
       },
       "corvus.storage.azure.tablestorage": {
         "type": "Project",
         "dependencies": {
-          "Azure.Data.Tables": "[12.6.1, )",
-          "Corvus.Storage.Common": "[1.0.0, )"
+          "Azure.Data.Tables": "12.6.1",
+          "Corvus.Storage.Common": "1.0.0"
         }
       },
       "corvus.storage.common": {
         "type": "Project",
         "dependencies": {
-          "Corvus.Identity.Azure": "[3.1.0, )",
-          "Microsoft.Extensions.Configuration.Binder": "[3.1.*, )"
+          "Corvus.Identity.Azure": "3.1.0",
+          "Microsoft.Extensions.Configuration.Binder": "3.1.0"
         }
       },
       "corvus.storage.examples.azure.blobstorage": {
         "type": "Project",
         "dependencies": {
-          "Corvus.Storage.Azure.BlobStorage": "[1.0.0, )"
+          "Corvus.Storage.Azure.BlobStorage": "1.0.0"
         }
       },
       "corvus.storage.examples.azure.cosmos": {
         "type": "Project",
         "dependencies": {
-          "Corvus.Storage.Azure.Cosmos": "[1.0.0, )"
+          "Corvus.Storage.Azure.Cosmos": "1.0.0"
         }
       },
       "corvus.storage.examples.azure.tables": {
         "type": "Project",
         "dependencies": {
-          "Corvus.Storage.Azure.TableStorage": "[1.0.0, )"
+          "Corvus.Storage.Azure.TableStorage": "1.0.0"
         }
       }
     }
