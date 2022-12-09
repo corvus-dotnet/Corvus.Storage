@@ -1,5 +1,11 @@
 # Release notes for Corvus.Storage v1.
 
+## V1.5
+
+NuGet update:
+
+* `Corvus.Identity` 3.1 -> 3.2
+
 ## V1.4
 
 NuGet updates:
