@@ -12,6 +12,6 @@ Scenario Outline: Plain text connection string
     Then the SqlDatabaseConfiguration should succeed, and type should be 'ConnectionStringAsPlainText'
 
     Examples:
-        | clientIdentityType |
-        | None               |
-        | Managed            |
+        | clientIdentityType    |
+        | None                  |
+        | SystemAssignedManaged |

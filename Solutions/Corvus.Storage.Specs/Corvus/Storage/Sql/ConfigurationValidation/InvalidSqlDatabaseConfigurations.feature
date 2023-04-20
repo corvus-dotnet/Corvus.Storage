@@ -19,9 +19,9 @@ Scenario Outline: No connection string
     Then the SqlDatabaseConfiguration should be reported as invalid
 
     Examples:
-        | clientIdentityType |
-        | None               |
-        | Managed            |
+        | clientIdentityType    |
+        | None                  |
+        | SystemAssignedManaged |
 
 Scenario Outline: Connection string in both plain text and key vault
     Given a SqlDatabaseConfiguration
@@ -32,6 +32,6 @@ Scenario Outline: Connection string in both plain text and key vault
     Then the SqlDatabaseConfiguration should be reported as invalid
 
     Examples:
-        | clientIdentityType |
-        | None               |
-        | Managed            |
+        | clientIdentityType    |
+        | None                  |
+        | SystemAssignedManaged |

@@ -94,7 +94,7 @@ namespace Corvus.Storage.Sql
             this.configuration.ClientIdentity = identitySourceType switch
             {
                 ClientIdentitySourceTypes.None => null,
-                ClientIdentitySourceTypes.Managed => new ClientIdentityConfiguration
+                ClientIdentitySourceTypes.SystemAssignedManaged => new ClientIdentityConfiguration
                 {
                     IdentitySourceType = identitySourceType,
                 },
