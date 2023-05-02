@@ -111,15 +111,11 @@ internal class TableClientFactory :
         TableClientOptions? clientOptions,
         CancellationToken cancellationToken)
     {
-        string? accessKey = await this.GetKeyVaultSecretFromConfigAsync(
+        string accessKey = await this.GetKeyVaultSecretFromConfigAsync(
             configuration.AccessKeyInKeyVault!,
             cancellationToken)
-            .ConfigureAwait(false);
-
-        if (accessKey is null)
-        {
-            throw new InvalidOperationException($"Failed to get secret {configuration.AccessKeyInKeyVault!.SecretName} from {configuration.AccessKeyInKeyVault!.VaultName}");
-        }
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"Failed to get secret {configuration.AccessKeyInKeyVault!.SecretName} from {configuration.AccessKeyInKeyVault!.VaultName}");
 
         return new TableServiceClient(
             AccountUri(configuration.AccountName!),

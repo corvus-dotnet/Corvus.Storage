@@ -2,6 +2,15 @@
 
 ## V1.5
 
+NuGet updates:
+
+* `Azure.Data.Tables` 12.7 -> 12.8
+* `Azure.Storage.Blobs` 12.14 -> 12.16
+* `Microsoft.Azure.Cosmos` 3.31 -> 3.33
+* `Microsoft.Data.SqlClient` 5.0 -> 5.1
+
+## V1.5
+
 NuGet update:
 
 * `Corvus.Identity` 3.1 -> 3.2
