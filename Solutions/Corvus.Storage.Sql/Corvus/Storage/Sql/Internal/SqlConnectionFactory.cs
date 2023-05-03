@@ -100,16 +100,12 @@ internal class SqlConnectionFactory :
         SqlDatabaseConfiguration configuration, CancellationToken cancellationToken)
     {
         KeyVaultSecretConfiguration secretConfiguration = configuration.ConnectionStringInKeyVault!;
-        string? connectionString =
+        string connectionString =
             await this.GetKeyVaultSecretFromConfigAsync(
                 secretConfiguration,
                 cancellationToken)
-                .ConfigureAwait(false);
-
-        if (connectionString is null)
-        {
-            throw new InvalidOperationException($"Secret {secretConfiguration.SecretName} not found in vault {secretConfiguration.VaultName}");
-        }
+                .ConfigureAwait(false)
+                ?? throw new InvalidOperationException($"Secret {secretConfiguration.SecretName} not found in vault {secretConfiguration.VaultName}");
 
         return new SqlConnection(connectionString);
     }
