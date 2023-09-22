@@ -20,7 +20,6 @@ namespace Corvus.Storage.Azure.BlobStorage
     /// </remarks>
     public static class AzureStorageBlobContainerNaming
     {
-        private static readonly Lazy<SHA1> HashProvider = new(() => SHA1.Create());
         private static readonly uint[] Lookup32 = CreateLookup32();
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace Corvus.Storage.Azure.BlobStorage
 
             const int Sha1Length = 20;
             Span<byte> hashedBytes = stackalloc byte[Sha1Length];
-            if (!HashProvider.Value.TryComputeHash(nameUtf8, hashedBytes, out int written) || written != Sha1Length)
+            if (!SHA1.TryHashData(nameUtf8, hashedBytes, out int written) || written != Sha1Length)
             {
                 throw new InvalidOperationException("Failed to produce hash of expected size");
             }
