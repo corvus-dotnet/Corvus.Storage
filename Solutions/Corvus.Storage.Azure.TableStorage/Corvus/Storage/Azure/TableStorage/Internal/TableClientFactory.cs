@@ -48,8 +48,7 @@ internal class TableClientFactory :
     }
 
     /// <inheritdoc/>
-    protected override string GetCacheKeyForConfiguration(
-        TableConfiguration contextConfiguration)
+    protected override string GetCacheKeyForConfiguration(TableConfiguration? contextConfiguration)
     {
         // TODO: there are many options for configuration, and we need to work out a sound way
         // to reduce that reliably to a cache key.
@@ -60,13 +59,13 @@ internal class TableClientFactory :
 
     /// <inheritdoc/>
     protected override void InvalidateForConfiguration(
-        TableConfiguration configuration,
+        TableConfiguration? configuration,
         TableClientOptions? connectionOptions,
         CancellationToken cancellationToken)
     {
-        this.InvalidateCredentials(configuration.ClientIdentity);
-        this.InvalidateCredentials(configuration.ConnectionStringInKeyVault?.VaultClientIdentity);
-        this.InvalidateCredentials(configuration.AccessKeyInKeyVault?.VaultClientIdentity);
+        this.InvalidateCredentials(configuration?.ClientIdentity);
+        this.InvalidateCredentials(configuration?.ConnectionStringInKeyVault?.VaultClientIdentity);
+        this.InvalidateCredentials(configuration?.AccessKeyInKeyVault?.VaultClientIdentity);
     }
 
     private static Uri AccountUri(string accountName)

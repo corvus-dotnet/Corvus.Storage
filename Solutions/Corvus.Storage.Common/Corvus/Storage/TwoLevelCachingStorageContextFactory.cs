@@ -78,7 +78,7 @@ namespace Corvus.Storage
                 // failed. As such, we will remove the item from the dictionary, and attempt to create a new one to
                 // return. If removing the value fails, that's likely because it's been removed by a different thread,
                 // so we will ignore that and just attempt to create and return a new value anyway.
-                this.parentContexts.TryRemove(parentContextKey, out Task<TStorageContextParent> _);
+                this.parentContexts.TryRemove(parentContextKey, out _);
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
                 // recreation that could happen if multiple threads are trying to rectify the failure simultanously.

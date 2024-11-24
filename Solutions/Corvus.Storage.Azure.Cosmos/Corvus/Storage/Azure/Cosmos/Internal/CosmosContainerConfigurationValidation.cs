@@ -22,7 +22,7 @@ internal static class CosmosContainerConfigurationValidation
     /// Null if the configuration is valid. A description of the problem if it is not valid.
     /// </returns>
     internal static string? Validate(
-        CosmosContainerConfiguration configuration,
+        CosmosContainerConfiguration? configuration,
         out CosmosContainerConfigurationTypes type)
     {
         type = default;
@@ -32,7 +32,7 @@ internal static class CosmosContainerConfigurationValidation
             return "must not be null";
         }
 
-        HashSet<CosmosContainerConfigurationTypes> indicatedConfigTypes = new();
+        HashSet<CosmosContainerConfigurationTypes> indicatedConfigTypes = [];
 
         bool accountUriPresent = !string.IsNullOrWhiteSpace(configuration.AccountUri);
         bool databasePresent = !string.IsNullOrWhiteSpace(configuration.Database);

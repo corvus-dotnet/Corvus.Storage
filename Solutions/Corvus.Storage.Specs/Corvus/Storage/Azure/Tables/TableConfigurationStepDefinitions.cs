@@ -18,15 +18,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using NUnit.Framework;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Azure.Tables;
 
 [Binding]
 public class TableConfigurationStepDefinitions
 {
-    private readonly Dictionary<string, TableConfiguration> configurations = new();
+    private readonly Dictionary<string, TableConfiguration?> configurations = new();
     private readonly Dictionary<string, TableClient> tableClients = new();
     private readonly TokenCredentialSourceBindings tokenCredentialSourceBindings;
     private readonly ITableSourceFromDynamicConfiguration tableSource;
@@ -34,8 +33,7 @@ public class TableConfigurationStepDefinitions
     private string? validationMessage;
     private TableConfigurationTypes validatedType;
 
-    public TableConfigurationStepDefinitions(
-            TokenCredentialSourceBindings tokenCredentialSourceBindings)
+    public TableConfigurationStepDefinitions(TokenCredentialSourceBindings tokenCredentialSourceBindings)
     {
         this.tokenCredentialSourceBindings = tokenCredentialSourceBindings;
 
@@ -57,7 +55,7 @@ public class TableConfigurationStepDefinitions
         foreach (IConfigurationSection section in configuration.GetChildren())
         {
             string configName = section.Key;
-            TableConfiguration config = section.Get<TableConfiguration>();
+            TableConfiguration? config = section.Get<TableConfiguration>();
             this.configurations.Add(configName, config);
         }
     }
@@ -66,7 +64,7 @@ public class TableConfigurationStepDefinitions
     [When("I get a table client for '([^']*)' as '([^']*)'")]
     public async Task WhenIGetATableClientForAs(string configName, string tableName)
     {
-        TableConfiguration config = this.configurations[configName];
+        TableConfiguration? config = this.configurations[configName];
         TableClient tableClient = await this.tableSource.GetStorageContextAsync(config).ConfigureAwait(false);
         this.tableClients.Add(tableName, tableClient);
     }
@@ -74,7 +72,7 @@ public class TableConfigurationStepDefinitions
     [When("I validate table configuration '([^']*)'")]
     public void WhenIValidateTableConfiguration(string configName)
     {
-        TableConfiguration config = this.configurations[configName];
+        TableConfiguration? config = this.configurations[configName];
         this.validationMessage = TableConfigurationValidation.Validate(
             config,
             out this.validatedType);
@@ -83,7 +81,7 @@ public class TableConfigurationStepDefinitions
     [When("I get a replacement for a failed table client for '([^']*)' as '([^']*)'")]
     public async Task WhenIGetAReplacementForAFailedTableClientForAsAsync(string configName, string tableName)
     {
-        TableConfiguration config = this.configurations[configName];
+        TableConfiguration? config = this.configurations[configName];
         TableClient tableClient = await this.tableSource.GetReplacementForFailedStorageContextAsync(config).ConfigureAwait(false);
         this.tableClients.Add(tableName, tableClient);
     }
@@ -137,7 +135,7 @@ public class TableConfigurationStepDefinitions
     {
         Assert.AreEqual(1, this.tokenCredentialSourceBindings.IdentityConfigurations.Count);
         Assert.AreSame(
-            this.configurations[configurationName].ClientIdentity,
+            this.configurations[configurationName]?.ClientIdentity,
             this.tokenCredentialSourceBindings.IdentityConfigurations[0]);
     }
 
@@ -147,7 +145,7 @@ public class TableConfigurationStepDefinitions
     {
         Assert.AreEqual(1, this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations.Count);
         Assert.AreSame(
-            this.configurations[configurationName].ClientIdentity,
+            this.configurations[configurationName]?.ClientIdentity,
             this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations[0]);
     }
 }

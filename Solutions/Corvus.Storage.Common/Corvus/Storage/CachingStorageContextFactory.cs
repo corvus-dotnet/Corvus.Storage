@@ -52,8 +52,7 @@ namespace Corvus.Storage
         /// on <see cref="IServiceIdentityAzureTokenCredentialSource"/>, but only in certain
         /// scenarios.)
         /// </param>
-        protected CachingStorageContextFactory(
-            IServiceProvider serviceProvider)
+        protected CachingStorageContextFactory(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
@@ -74,7 +73,7 @@ namespace Corvus.Storage
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetStorageContextAsync(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
@@ -93,15 +92,15 @@ namespace Corvus.Storage
 
             if (result.IsFaulted)
             {
-                // If a task has been created in the previous statement, it won't have completed yet. Therefore if it's
+                // If a task has been created in the previous statement, it won't have completed yet. Therefore, if it's
                 // faulted, that means it was added as part of a previous request to this method, and subsequently
                 // failed. As such, we will remove the item from the dictionary, and attempt to create a new one to
                 // return. If removing the value fails, that's likely because it's been removed by a different thread,
                 // so we will ignore that and just attempt to create and return a new value anyway.
-                this.contexts.TryRemove(key, out Task<TStorageContext> _);
+                this.contexts.TryRemove(key, out _);
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
-                // recreation that could happen if multiple threads are trying to rectify the failure simultanously.
+                // recreation that could happen if multiple threads are trying to rectify the failure simultaneously.
                 await Task.Delay(this.Random.Next(150, 250), cancellationToken).ConfigureAwait(false);
 
                 result = this.contexts.GetOrAdd(
@@ -115,7 +114,7 @@ namespace Corvus.Storage
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetReplacementForFailedStorageContextAsync(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
@@ -159,7 +158,7 @@ namespace Corvus.Storage
         /// configuration and the specified connection options.
         /// </returns>
         protected virtual string GetCacheKeyForContext(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions)
         {
             return this.GetCacheKeyForConfiguration(contextConfiguration) + "/" + this.GetCacheKeyForConnectionOptions(connectionOptions);
@@ -175,8 +174,7 @@ namespace Corvus.Storage
         /// <returns>
         /// A key that is unique to the storage context identified by this configuration.
         /// </returns>
-        protected abstract string GetCacheKeyForConfiguration(
-            TConfiguration contextConfiguration);
+        protected abstract string GetCacheKeyForConfiguration(TConfiguration? contextConfiguration);
 
         /// <summary>
         /// Produces a unique cache key based on a particular set of connection options.
@@ -250,7 +248,7 @@ namespace Corvus.Storage
         /// May enable the operation to be cancelled.
         /// </param>
         protected abstract void InvalidateForConfiguration(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken);
 
@@ -279,6 +277,7 @@ namespace Corvus.Storage
                     .ConfigureAwait(false);
             TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync(cancellationToken)
                 .ConfigureAwait(false);
+
             if (keyVaultCredentials is not null)
             {
                 var keyVaultUri = new Uri($"https://{secretConfiguration.VaultName}.vault.azure.net/");

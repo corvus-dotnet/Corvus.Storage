@@ -22,7 +22,7 @@ internal static class TableConfigurationValidation
     /// Null if the configuration is valid. A description of the problem if it is not valid.
     /// </returns>
     internal static string? Validate(
-        TableConfiguration configuration,
+        TableConfiguration? configuration,
         out TableConfigurationTypes type)
     {
         type = default;
