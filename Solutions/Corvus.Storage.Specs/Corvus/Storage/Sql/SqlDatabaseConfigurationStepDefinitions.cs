@@ -16,8 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using NUnit.Framework;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Sql
 {

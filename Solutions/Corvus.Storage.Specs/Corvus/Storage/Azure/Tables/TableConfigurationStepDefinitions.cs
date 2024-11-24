@@ -18,8 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using NUnit.Framework;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Azure.Tables;
 
@@ -34,8 +33,7 @@ public class TableConfigurationStepDefinitions
     private string? validationMessage;
     private TableConfigurationTypes validatedType;
 
-    public TableConfigurationStepDefinitions(
-            TokenCredentialSourceBindings tokenCredentialSourceBindings)
+    public TableConfigurationStepDefinitions(TokenCredentialSourceBindings tokenCredentialSourceBindings)
     {
         this.tokenCredentialSourceBindings = tokenCredentialSourceBindings;
 

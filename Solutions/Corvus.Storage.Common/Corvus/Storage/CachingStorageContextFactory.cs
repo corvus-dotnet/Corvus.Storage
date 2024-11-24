@@ -52,8 +52,7 @@ namespace Corvus.Storage
         /// on <see cref="IServiceIdentityAzureTokenCredentialSource"/>, but only in certain
         /// scenarios.)
         /// </param>
-        protected CachingStorageContextFactory(
-            IServiceProvider serviceProvider)
+        protected CachingStorageContextFactory(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
@@ -93,7 +92,7 @@ namespace Corvus.Storage
 
             if (result.IsFaulted)
             {
-                // If a task has been created in the previous statement, it won't have completed yet. Therefore if it's
+                // If a task has been created in the previous statement, it won't have completed yet. Therefore, if it's
                 // faulted, that means it was added as part of a previous request to this method, and subsequently
                 // failed. As such, we will remove the item from the dictionary, and attempt to create a new one to
                 // return. If removing the value fails, that's likely because it's been removed by a different thread,
@@ -101,7 +100,7 @@ namespace Corvus.Storage
                 this.contexts.TryRemove(key, out Task<TStorageContext> _);
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
-                // recreation that could happen if multiple threads are trying to rectify the failure simultanously.
+                // recreation that could happen if multiple threads are trying to rectify the failure simultaneously.
                 await Task.Delay(this.Random.Next(150, 250), cancellationToken).ConfigureAwait(false);
 
                 result = this.contexts.GetOrAdd(
@@ -279,6 +278,7 @@ namespace Corvus.Storage
                     .ConfigureAwait(false);
             TokenCredential? keyVaultCredentials = await credentialSource.GetTokenCredentialAsync(cancellationToken)
                 .ConfigureAwait(false);
+
             if (keyVaultCredentials is not null)
             {
                 var keyVaultUri = new Uri($"https://{secretConfiguration.VaultName}.vault.azure.net/");
