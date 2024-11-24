@@ -5,8 +5,5 @@
   },
   "language": {
     "feature": "en-us"
-  },
-  "stepAssemblies": [
-    { "assembly": "Corvus.Testing.SpecFlow" }
-  ]
+  }
 }
