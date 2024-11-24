@@ -24,7 +24,7 @@ namespace Corvus.Storage.Azure.Cosmos
     {
         private readonly ServiceProvider serviceProvider;
         private readonly ICosmosContainerSourceFromDynamicConfiguration containerSource;
-        private readonly Dictionary<string, CosmosContainerConfiguration> configurations = new();
+        private readonly Dictionary<string, CosmosContainerConfiguration?> configurations = new();
         private readonly Dictionary<string, Container> containers = new();
 
         private string? validationMessage;
@@ -54,7 +54,7 @@ namespace Corvus.Storage.Azure.Cosmos
             foreach (IConfigurationSection section in configuration.GetChildren())
             {
                 string configName = section.Key;
-                CosmosContainerConfiguration config = section.Get<CosmosContainerConfiguration>();
+                CosmosContainerConfiguration? config = section.Get<CosmosContainerConfiguration>();
                 this.configurations.Add(configName, config);
             }
         }
@@ -62,7 +62,7 @@ namespace Corvus.Storage.Azure.Cosmos
         [When("I get a Cosmos DB container for '([^']*)' as '([^']*)'")]
         public async Task WhenIGetACosmosDBContainer(string configName, string containerName)
         {
-            CosmosContainerConfiguration config = this.configurations[configName];
+            CosmosContainerConfiguration? config = this.configurations[configName];
             Container container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
         }
@@ -70,7 +70,7 @@ namespace Corvus.Storage.Azure.Cosmos
         [When("I validate Cosmos DB storage configuration '([^']*)'")]
         public void WhenIValidateBlobStorageConfiguration(string configName)
         {
-            CosmosContainerConfiguration config = this.configurations[configName];
+            CosmosContainerConfiguration? config = this.configurations[configName];
             this.validationMessage = CosmosContainerConfigurationValidation.Validate(
                 config,
                 out this.validatedType);

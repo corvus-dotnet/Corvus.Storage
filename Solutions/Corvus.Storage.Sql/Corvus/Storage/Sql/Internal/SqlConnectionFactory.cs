@@ -47,7 +47,7 @@ internal class SqlConnectionFactory :
 
     /// <inheritdoc/>
     public async ValueTask<SqlConnection> GetStorageContextAsync(
-        SqlDatabaseConfiguration configuration,
+        SqlDatabaseConfiguration? configuration,
         object? connectionOptions,
         CancellationToken cancellationToken)
     {
@@ -76,11 +76,11 @@ internal class SqlConnectionFactory :
 
     /// <inheritdoc/>
     public async ValueTask<SqlConnection> GetReplacementForFailedStorageContextAsync(
-        SqlDatabaseConfiguration configuration,
+        SqlDatabaseConfiguration? configuration,
         object? connectionOptions,
         CancellationToken cancellationToken = default)
     {
-        if (configuration.ConnectionStringInKeyVault?.VaultClientIdentity is not null)
+        if (configuration?.ConnectionStringInKeyVault?.VaultClientIdentity is not null)
         {
             this.AzureTokenCredentialSourceFromConfig.InvalidateFailedAccessToken(configuration.ConnectionStringInKeyVault.VaultClientIdentity);
         }
@@ -91,15 +91,15 @@ internal class SqlConnectionFactory :
     }
 
     private static ValueTask<SqlConnection> ConnectionFromConnectionStringAsPlainText(
-        SqlDatabaseConfiguration configuration)
+        SqlDatabaseConfiguration? configuration)
     {
-        return new ValueTask<SqlConnection>(new SqlConnection(configuration.ConnectionStringPlainText));
+        return new ValueTask<SqlConnection>(new SqlConnection(configuration?.ConnectionStringPlainText));
     }
 
     private async ValueTask<SqlConnection> ConnectionFromConnectionStringInKeyVault(
-        SqlDatabaseConfiguration configuration, CancellationToken cancellationToken)
+        SqlDatabaseConfiguration? configuration, CancellationToken cancellationToken)
     {
-        KeyVaultSecretConfiguration secretConfiguration = configuration.ConnectionStringInKeyVault!;
+        KeyVaultSecretConfiguration secretConfiguration = configuration?.ConnectionStringInKeyVault!;
         string connectionString =
             await this.GetKeyVaultSecretFromConfigAsync(
                 secretConfiguration,

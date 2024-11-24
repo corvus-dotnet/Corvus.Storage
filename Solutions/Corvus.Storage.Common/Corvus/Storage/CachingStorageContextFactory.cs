@@ -73,7 +73,7 @@ namespace Corvus.Storage
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetStorageContextAsync(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
@@ -97,7 +97,7 @@ namespace Corvus.Storage
                 // failed. As such, we will remove the item from the dictionary, and attempt to create a new one to
                 // return. If removing the value fails, that's likely because it's been removed by a different thread,
                 // so we will ignore that and just attempt to create and return a new value anyway.
-                this.contexts.TryRemove(key, out Task<TStorageContext> _);
+                this.contexts.TryRemove(key, out _);
 
                 // Wait for a short and random time, to reduce the potential for large numbers of spurious container
                 // recreation that could happen if multiple threads are trying to rectify the failure simultaneously.
@@ -114,7 +114,7 @@ namespace Corvus.Storage
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetReplacementForFailedStorageContextAsync(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
@@ -158,7 +158,7 @@ namespace Corvus.Storage
         /// configuration and the specified connection options.
         /// </returns>
         protected virtual string GetCacheKeyForContext(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions)
         {
             return this.GetCacheKeyForConfiguration(contextConfiguration) + "/" + this.GetCacheKeyForConnectionOptions(connectionOptions);
@@ -174,8 +174,7 @@ namespace Corvus.Storage
         /// <returns>
         /// A key that is unique to the storage context identified by this configuration.
         /// </returns>
-        protected abstract string GetCacheKeyForConfiguration(
-            TConfiguration contextConfiguration);
+        protected abstract string GetCacheKeyForConfiguration(TConfiguration? contextConfiguration);
 
         /// <summary>
         /// Produces a unique cache key based on a particular set of connection options.
@@ -249,7 +248,7 @@ namespace Corvus.Storage
         /// May enable the operation to be cancelled.
         /// </param>
         protected abstract void InvalidateForConfiguration(
-            TConfiguration contextConfiguration,
+            TConfiguration? contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken);
 
