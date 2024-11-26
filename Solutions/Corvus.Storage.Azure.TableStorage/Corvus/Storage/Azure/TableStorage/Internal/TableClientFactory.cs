@@ -48,8 +48,7 @@ internal class TableClientFactory :
     }
 
     /// <inheritdoc/>
-    protected override string GetCacheKeyForConfiguration(
-        TableConfiguration contextConfiguration)
+    protected override string GetCacheKeyForConfiguration(TableConfiguration contextConfiguration)
     {
         // TODO: there are many options for configuration, and we need to work out a sound way
         // to reduce that reliably to a cache key.

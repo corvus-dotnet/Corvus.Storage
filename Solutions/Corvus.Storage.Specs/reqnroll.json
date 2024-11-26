@@ -1,11 +1,9 @@
 ﻿{
+  "$schema": "https://schemas.reqnroll.net/reqnroll-config-latest.json",
   "bindingCulture": {
     "name": "en-us"
   },
   "language": {
     "feature": "en-us"
-  },
-  "stepAssemblies": [
-    { "assembly": "Corvus.Testing.SpecFlow" }
-  ]
+  }
 }

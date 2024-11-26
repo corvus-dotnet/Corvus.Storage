@@ -18,8 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using NUnit.Framework;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Azure.Tables;
 
@@ -34,8 +33,7 @@ public class TableConfigurationStepDefinitions
     private string? validationMessage;
     private TableConfigurationTypes validatedType;
 
-    public TableConfigurationStepDefinitions(
-            TokenCredentialSourceBindings tokenCredentialSourceBindings)
+    public TableConfigurationStepDefinitions(TokenCredentialSourceBindings tokenCredentialSourceBindings)
     {
         this.tokenCredentialSourceBindings = tokenCredentialSourceBindings;
 
@@ -57,7 +55,7 @@ public class TableConfigurationStepDefinitions
         foreach (IConfigurationSection section in configuration.GetChildren())
         {
             string configName = section.Key;
-            TableConfiguration config = section.Get<TableConfiguration>();
+            TableConfiguration config = section.Get<TableConfiguration>()!;
             this.configurations.Add(configName, config);
         }
     }
@@ -66,7 +64,7 @@ public class TableConfigurationStepDefinitions
     [When("I get a table client for '([^']*)' as '([^']*)'")]
     public async Task WhenIGetATableClientForAs(string configName, string tableName)
     {
-        TableConfiguration config = this.configurations[configName];
+        TableConfiguration config = this.configurations[configName]!;
         TableClient tableClient = await this.tableSource.GetStorageContextAsync(config).ConfigureAwait(false);
         this.tableClients.Add(tableName, tableClient);
     }

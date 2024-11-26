@@ -28,7 +28,8 @@ namespace Corvus.Storage.Examples.ConsoleApp.ExplicitConfiguration
         private static void ConfigureHostBuilder(IHostBuilder hostBuilder) => hostBuilder
             .ConfigureServices((hostContext, services) =>
             {
-                ApplicationConfigurationSettings configuration = hostContext.Configuration.Get<ApplicationConfigurationSettings>();
+                ApplicationConfigurationSettings configuration = hostContext.Configuration.Get<ApplicationConfigurationSettings>()!;
+
                 services.AddSingleton(configuration);
                 services.AddAzureBlobStorageClientSourceFromDynamicConfiguration();
                 services.AddCosmosContainerSourceFromDynamicConfiguration();

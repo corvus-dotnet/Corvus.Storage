@@ -15,8 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using NUnit.Framework;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Azure.Cosmos
 {
@@ -55,7 +54,7 @@ namespace Corvus.Storage.Azure.Cosmos
             foreach (IConfigurationSection section in configuration.GetChildren())
             {
                 string configName = section.Key;
-                CosmosContainerConfiguration config = section.Get<CosmosContainerConfiguration>();
+                CosmosContainerConfiguration config = section.Get<CosmosContainerConfiguration>()!;
                 this.configurations.Add(configName, config);
             }
         }
@@ -63,7 +62,7 @@ namespace Corvus.Storage.Azure.Cosmos
         [When("I get a Cosmos DB container for '([^']*)' as '([^']*)'")]
         public async Task WhenIGetACosmosDBContainer(string configName, string containerName)
         {
-            CosmosContainerConfiguration config = this.configurations[configName];
+            CosmosContainerConfiguration config = this.configurations[configName]!;
             Container container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
         }
