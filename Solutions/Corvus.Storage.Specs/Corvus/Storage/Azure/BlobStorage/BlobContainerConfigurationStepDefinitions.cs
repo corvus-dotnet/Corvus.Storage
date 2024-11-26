@@ -77,7 +77,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         [When("I validate blob storage configuration '([^']*)'")]
         public void WhenIValidateBlobStorageConfiguration(string configName)
         {
-            BlobContainerConfiguration? config = this.configurations[configName];
+            BlobContainerConfiguration config = this.configurations[configName];
             this.validationMessage = BlobContainerConfigurationValidation.Validate(
                 config,
                 out this.validatedType);
@@ -86,7 +86,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         [When("I get a replacement for a failed blob storage container for '([^']*)' as '([^']*)'")]
         public async Task GivenIRecreatedABlobStorageContainerForAsAsync(string configName, string containerName)
         {
-            BlobContainerConfiguration? config = this.configurations[configName];
+            BlobContainerConfiguration config = this.configurations[configName];
             BlobContainerClient container = await this.containerSource.GetReplacementForFailedStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
         }
@@ -137,7 +137,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         {
             Assert.AreEqual(1, this.tokenCredentialSourceBindings.IdentityConfigurations.Count);
             Assert.AreSame(
-                this.configurations[configurationName]?.ClientIdentity,
+                this.configurations[configurationName].ClientIdentity,
                 this.tokenCredentialSourceBindings.IdentityConfigurations[0]);
         }
 
@@ -147,7 +147,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         {
             Assert.AreEqual(1, this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations.Count);
             Assert.AreSame(
-                this.configurations[configurationName]?.ClientIdentity,
+                this.configurations[configurationName].ClientIdentity,
                 this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations[0]);
         }
     }

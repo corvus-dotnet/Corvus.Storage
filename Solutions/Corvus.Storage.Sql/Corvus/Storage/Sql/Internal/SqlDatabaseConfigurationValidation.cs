@@ -22,7 +22,7 @@ internal static class SqlDatabaseConfigurationValidation
     /// Null if the configuration is valid. A description of the problem if it is not valid.
     /// </returns>
     internal static string? Validate(
-        SqlDatabaseConfiguration? configuration,
+        SqlDatabaseConfiguration configuration,
         out SqlDatabaseConfigurationTypes type)
     {
         type = default;

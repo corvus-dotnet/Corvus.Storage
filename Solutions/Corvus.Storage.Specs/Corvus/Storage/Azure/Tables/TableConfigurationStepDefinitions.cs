@@ -135,7 +135,7 @@ public class TableConfigurationStepDefinitions
     {
         Assert.AreEqual(1, this.tokenCredentialSourceBindings.IdentityConfigurations.Count);
         Assert.AreSame(
-            this.configurations[configurationName]?.ClientIdentity,
+            this.configurations[configurationName].ClientIdentity,
             this.tokenCredentialSourceBindings.IdentityConfigurations[0]);
     }
 
@@ -145,7 +145,7 @@ public class TableConfigurationStepDefinitions
     {
         Assert.AreEqual(1, this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations.Count);
         Assert.AreSame(
-            this.configurations[configurationName]?.ClientIdentity,
+            this.configurations[configurationName].ClientIdentity,
             this.tokenCredentialSourceBindings.InvalidatedIdentityConfigurations[0]);
     }
 }
