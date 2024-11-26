@@ -23,7 +23,7 @@ namespace Corvus.Storage.Sql
     [Binding]
     public class SqlDatabaseConfigurationStepDefinitions
     {
-        private readonly Dictionary<string, SqlDatabaseConfiguration?> configurations = new();
+        private readonly Dictionary<string, SqlDatabaseConfiguration> configurations = new();
         private readonly SqlDatabaseConfiguration configuration = new();
         private readonly Dictionary<string, SqlConnection> connections = new();
         private readonly ServiceProvider serviceProvider;
@@ -57,7 +57,7 @@ namespace Corvus.Storage.Sql
             foreach (IConfigurationSection section in configuration.GetChildren())
             {
                 string configName = section.Key;
-                SqlDatabaseConfiguration? config = section.Get<SqlDatabaseConfiguration>();
+                SqlDatabaseConfiguration config = section.Get<SqlDatabaseConfiguration>()!;
                 this.configurations.Add(configName, config);
             }
         }
@@ -65,7 +65,7 @@ namespace Corvus.Storage.Sql
         [When("I get a SqlConnection for '([^']*)' as '([^']*)'")]
         public async Task WhenIGetASqlConnectionForAs(string configJsonName, string connectionId)
         {
-            SqlDatabaseConfiguration? config = this.configurations[configJsonName];
+            SqlDatabaseConfiguration config = this.configurations[configJsonName];
             SqlConnection container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
             this.connections.Add(connectionId, container);
         }

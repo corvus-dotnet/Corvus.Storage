@@ -22,7 +22,7 @@ internal static class CosmosContainerConfigurationValidation
     /// Null if the configuration is valid. A description of the problem if it is not valid.
     /// </returns>
     internal static string? Validate(
-        CosmosContainerConfiguration? configuration,
+        CosmosContainerConfiguration configuration,
         out CosmosContainerConfigurationTypes type)
     {
         type = default;

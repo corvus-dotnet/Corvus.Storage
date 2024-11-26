@@ -51,7 +51,7 @@ namespace Corvus.Storage.Azure.Cosmos.Internal
         }
 
         /// <inheritdoc/>
-        protected override string GetCacheKeyForConfiguration(CosmosContainerConfiguration? contextConfiguration)
+        protected override string GetCacheKeyForConfiguration(CosmosContainerConfiguration contextConfiguration)
         {
             // TODO: there are many options for configuration, and we need to work out a sound way
             // to reduce that reliably to a cache key.
@@ -73,12 +73,12 @@ namespace Corvus.Storage.Azure.Cosmos.Internal
 
         /// <inheritdoc/>
         protected override void InvalidateForConfiguration(
-            CosmosContainerConfiguration? contextConfiguration,
+            CosmosContainerConfiguration contextConfiguration,
             CosmosClientOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
-            this.InvalidateCredentials(contextConfiguration?.ConnectionStringInKeyVault?.VaultClientIdentity);
-            this.InvalidateCredentials(contextConfiguration?.AccessKeyInKeyVault?.VaultClientIdentity);
+            this.InvalidateCredentials(contextConfiguration.ConnectionStringInKeyVault?.VaultClientIdentity);
+            this.InvalidateCredentials(contextConfiguration.AccessKeyInKeyVault?.VaultClientIdentity);
         }
 
         private static ValueTask<CosmosClient> ClientFromConnectionStringAsPlainText(

@@ -73,7 +73,7 @@ namespace Corvus.Storage
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetStorageContextAsync(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
@@ -114,7 +114,7 @@ namespace Corvus.Storage
 
         /// <inheritdoc/>
         public async ValueTask<TStorageContext> GetReplacementForFailedStorageContextAsync(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken)
         {
@@ -158,7 +158,7 @@ namespace Corvus.Storage
         /// configuration and the specified connection options.
         /// </returns>
         protected virtual string GetCacheKeyForContext(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions)
         {
             return this.GetCacheKeyForConfiguration(contextConfiguration) + "/" + this.GetCacheKeyForConnectionOptions(connectionOptions);
@@ -174,7 +174,7 @@ namespace Corvus.Storage
         /// <returns>
         /// A key that is unique to the storage context identified by this configuration.
         /// </returns>
-        protected abstract string GetCacheKeyForConfiguration(TConfiguration? contextConfiguration);
+        protected abstract string GetCacheKeyForConfiguration(TConfiguration contextConfiguration);
 
         /// <summary>
         /// Produces a unique cache key based on a particular set of connection options.
@@ -248,7 +248,7 @@ namespace Corvus.Storage
         /// May enable the operation to be cancelled.
         /// </param>
         protected abstract void InvalidateForConfiguration(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken);
 

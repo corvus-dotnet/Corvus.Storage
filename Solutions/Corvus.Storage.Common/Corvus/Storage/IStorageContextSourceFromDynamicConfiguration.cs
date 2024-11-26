@@ -44,7 +44,7 @@ namespace Corvus.Storage
         /// context described in the <typeparamref name="TConfiguration"/>.
         /// </returns>
         ValueTask<TStorageContext> GetStorageContextAsync(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken = default);
 
@@ -66,7 +66,7 @@ namespace Corvus.Storage
         /// context described in the <typeparamref name="TConfiguration"/>.
         /// </returns>
         ValueTask<TStorageContext> GetReplacementForFailedStorageContextAsync(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             TConnectionOptions? connectionOptions,
             CancellationToken cancellationToken = default);
 
@@ -85,7 +85,7 @@ namespace Corvus.Storage
         /// context described in the <typeparamref name="TConfiguration"/>.
         /// </returns>
         ValueTask<TStorageContext> GetStorageContextAsync(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             CancellationToken cancellationToken = default)
         {
             return this.GetStorageContextAsync(contextConfiguration, default, cancellationToken);
@@ -106,7 +106,7 @@ namespace Corvus.Storage
         /// context described in the <typeparamref name="TConfiguration"/>.
         /// </returns>
         ValueTask<TStorageContext> GetReplacementForFailedStorageContextAsync(
-            TConfiguration? contextConfiguration,
+            TConfiguration contextConfiguration,
             CancellationToken cancellationToken = default)
         {
             return this.GetReplacementForFailedStorageContextAsync(contextConfiguration, default, cancellationToken);

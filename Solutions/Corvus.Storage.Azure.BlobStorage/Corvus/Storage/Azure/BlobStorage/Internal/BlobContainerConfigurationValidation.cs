@@ -25,7 +25,7 @@ internal static class BlobContainerConfigurationValidation
     /// Null if the configuration is valid. A description of the problem if it is not valid.
     /// </returns>
     internal static string? Validate(
-        BlobContainerConfiguration? configuration,
+        BlobContainerConfiguration configuration,
         out BlobContainerConfigurationTypes type)
     {
         type = default;

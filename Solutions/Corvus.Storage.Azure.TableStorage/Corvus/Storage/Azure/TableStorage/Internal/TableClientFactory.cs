@@ -59,13 +59,13 @@ internal class TableClientFactory :
 
     /// <inheritdoc/>
     protected override void InvalidateForConfiguration(
-        TableConfiguration? configuration,
+        TableConfiguration configuration,
         TableClientOptions? connectionOptions,
         CancellationToken cancellationToken)
     {
-        this.InvalidateCredentials(configuration?.ClientIdentity);
-        this.InvalidateCredentials(configuration?.ConnectionStringInKeyVault?.VaultClientIdentity);
-        this.InvalidateCredentials(configuration?.AccessKeyInKeyVault?.VaultClientIdentity);
+        this.InvalidateCredentials(configuration.ClientIdentity);
+        this.InvalidateCredentials(configuration.ConnectionStringInKeyVault?.VaultClientIdentity);
+        this.InvalidateCredentials(configuration.AccessKeyInKeyVault?.VaultClientIdentity);
     }
 
     private static Uri AccountUri(string accountName)

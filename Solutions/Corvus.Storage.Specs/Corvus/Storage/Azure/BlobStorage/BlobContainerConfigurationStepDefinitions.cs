@@ -25,7 +25,7 @@ namespace Corvus.Storage.Azure.BlobStorage
     {
         private readonly ServiceProvider serviceProvider;
         private readonly IBlobContainerSourceFromDynamicConfiguration containerSource;
-        private readonly Dictionary<string, BlobContainerConfiguration?> configurations = new();
+        private readonly Dictionary<string, BlobContainerConfiguration> configurations = new();
         private readonly Dictionary<string, BlobContainerClient> containers = new();
         private readonly TokenCredentialSourceBindings tokenCredentialSourceBindings;
 
@@ -60,7 +60,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             foreach (IConfigurationSection section in configuration.GetChildren())
             {
                 string configName = section.Key;
-                BlobContainerConfiguration? config = section.Get<BlobContainerConfiguration>();
+                BlobContainerConfiguration config = section.Get<BlobContainerConfiguration>()!;
                 this.configurations.Add(configName, config);
             }
         }
@@ -69,7 +69,7 @@ namespace Corvus.Storage.Azure.BlobStorage
         [When("I get a blob storage container for '([^']*)' as '([^']*)'")]
         public async Task WhenIGetABlobStorageContainerForAs(string configName, string containerName)
         {
-            BlobContainerConfiguration? config = this.configurations[configName];
+            BlobContainerConfiguration config = this.configurations[configName];
             BlobContainerClient container = await this.containerSource.GetStorageContextAsync(config).ConfigureAwait(false);
             this.containers.Add(containerName, container);
         }
