@@ -24,9 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--TODO REMOVE -->
-    <PackageReference Include="Azure.Identity" Version="1.13.1" />
-    <PackageReference Include="Corvus.Identity.Azure" Version="3.3.0" />
+    <PackageReference Include="Corvus.Identity.Azure" Version="4.0.0" />
     <PackageReference Include="Endjin.RecommendedPractices.GitHub" Version="2.1.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

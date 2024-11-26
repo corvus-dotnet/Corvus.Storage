@@ -16,12 +16,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Corvus.Identity.Azure" Version="4.0.0" />
     <PackageReference Include="Endjin.RecommendedPractices.GitHub" Version="2.1.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.46.0" />
-    <!--TODO Remove-->
+    <!--Explicit reference required by Microsoft.Azure.Cosmos -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
