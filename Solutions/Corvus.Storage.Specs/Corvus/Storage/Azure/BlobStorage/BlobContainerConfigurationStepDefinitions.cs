@@ -16,8 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using NUnit.Framework;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Azure.BlobStorage
 {
@@ -61,7 +60,7 @@ namespace Corvus.Storage.Azure.BlobStorage
             foreach (IConfigurationSection section in configuration.GetChildren())
             {
                 string configName = section.Key;
-                BlobContainerConfiguration config = section.Get<BlobContainerConfiguration>();
+                BlobContainerConfiguration config = section.Get<BlobContainerConfiguration>()!;
                 this.configurations.Add(configName, config);
             }
         }

@@ -13,8 +13,7 @@ using Azure.Identity;
 using Corvus.Identity.ClientAuthentication.Azure;
 
 using Microsoft.Extensions.DependencyInjection;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Azure.BlobStorage
 {
@@ -60,8 +59,7 @@ namespace Corvus.Storage.Azure.BlobStorage
 
             private class Source : IAzureTokenCredentialSource
             {
-                public Source(
-                    ClientIdentityConfiguration configuration)
+                public Source(ClientIdentityConfiguration configuration)
                 {
                     this.Configuration = configuration;
                 }

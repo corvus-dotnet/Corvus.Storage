@@ -16,8 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using NUnit.Framework;
-
-using TechTalk.SpecFlow;
+using Reqnroll;
 
 namespace Corvus.Storage.Sql
 {
@@ -58,7 +57,7 @@ namespace Corvus.Storage.Sql
             foreach (IConfigurationSection section in configuration.GetChildren())
             {
                 string configName = section.Key;
-                SqlDatabaseConfiguration config = section.Get<SqlDatabaseConfiguration>();
+                SqlDatabaseConfiguration config = section.Get<SqlDatabaseConfiguration>()!;
                 this.configurations.Add(configName, config);
             }
         }
